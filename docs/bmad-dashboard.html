@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMAD Project Dashboard - Easy Guide</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 { 
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        .project-name-edit {
+            margin: 20px 0;
+            padding: 15px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 10px;
+        }
+        .project-name-edit label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        .project-name-edit input {
+            width: 100%;
+            max-width: 500px;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1em;
+            text-align: center;
+        }
+        .quick-status {
+            background: #f8f9fa;
+            padding: 25px;
+            border-bottom: 4px solid #667eea;
+        }
+        .quick-status h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        .status-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .status-card h3 {
+            color: #667eea;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .status-card p {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #2d3748;
+        }
+        .content {
+            padding: 30px;
+        }
+        .section {
+            margin-bottom: 35px;
+        }
+        .section-title {
+            color: #667eea;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        .workflow-step {
+            background: #f8f9fa;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            padding: 20px;
+            border-left: 6px solid #cbd5e0;
+            transition: all 0.3s ease;
+        }
+        .workflow-step:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .workflow-step.completed {
+            border-left-color: #48bb78;
+            background: #f0fff4;
+        }
+        .workflow-step.current {
+            border-left-color: #4299e1;
+            background: #ebf8ff;
+            box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
+        }
+        .workflow-step.pending {
+            border-left-color: #cbd5e0;
+            opacity: 0.7;
+        }
+        .step-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .step-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .step-status {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+            color: white;
+        }
+        .step-status.completed { background: #48bb78; }
+        .step-status.current { background: #4299e1; }
+        .step-status.pending { background: #a0aec0; }
+        .step-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        .step-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        .step-action {
+            background: #667eea;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            display: inline-block;
+            font-weight: 600;
+            margin-top: 10px;
+        }
+        .step-action.secondary {
+            background: #718096;
+        }
+        .file-info {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin-top: 12px;
+            border: 1px solid #e2e8f0;
+        }
+        .file-info strong {
+            color: #667eea;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .file-path {
+            font-family: 'Courier New', monospace;
+            background: #f7fafc;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #2d3748;
+            border-left: 3px solid #667eea;
+            margin-bottom: 5px;
+            word-break: break-all;
+        }
+        .help-box {
+            background: #ebf4ff;
+            border-left: 4px solid #4299e1;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        .help-box h3 {
+            color: #2c5282;
+            margin-bottom: 10px;
+        }
+        .help-box ul {
+            color: #2d3748;
+            line-height: 1.8;
+        }
+        .agent-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .agent-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .agent-card h4 {
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        .agent-card code {
+            background: #f7fafc;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+        .footer {
+            background: #2d3748;
+            color: white;
+            padding: 25px;
+            text-align: center;
+        }
+        .legend {
+            background: #fff5f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .legend-dot.completed { background: #48bb78; }
+        .legend-dot.current { background: #4299e1; }
+        .legend-dot.pending { background: #a0aec0; }
+        .beginner-tip {
+            background: #fef5e7;
+            border-left: 4px solid #f39c12;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+        .beginner-tip strong {
+            color: #d68910;
+            display: block;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>BMAD Project Dashboard</h1>
+            <p>Visual Workflow Tracker - Easy Guide for Beginners</p>
+            <div class="project-name-edit">
+                <label for="projectName">Your Project Name:</label>
+                <input type="text" id="projectName" value="My BMAD Project" placeholder="Enter your project name">
+            </div>
+        </div>
+
+        <div class="quick-status">
+            <h2>Quick Status Overview</h2>
+            <div class="beginner-tip">
+                <strong>For Beginners:</strong>
+                This dashboard shows you exactly where you are in building your project. Start from Step 1 and work your way down. Green means done, Blue means you're here now, Gray means not started yet.
+            </div>
+            <div class="status-grid">
+                <div class="status-card">
+                    <h3>Current Phase</h3>
+                    <p id="currentPhase">Setup</p>
+                </div>
+                <div class="status-card">
+                    <h3>Steps Completed</h3>
+                    <p id="stepsCompleted">1/10</p>
+                </div>
+                <div class="status-card">
+                    <h3>Next Action</h3>
+                    <p id="nextAction">Start Analysis</p>
+                </div>
+                <div class="status-card">
+                    <h3>Progress</h3>
+                    <p id="progressPercent">10%</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+            <section class="section">
+                <h2 class="section-title">Your Project Workflow (10 Easy Steps)</h2>
+                
+                <div class="legend">
+                    <div class="legend-item">
+                        <span class="legend-dot completed"></span>
+                        <span>Completed</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot current"></span>
+                        <span>You Are Here (Do This Next)</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot pending"></span>
+                        <span>Coming Up Later</span>
+                    </div>
+                </div>
+
+                <!-- Step 1: Setup -->
+                <div class="workflow-step completed">
+                    <div class="step-header">
+                        <span class="step-number">Step 1</span>
+                        <span class="step-status completed">COMPLETED</span>
+                    </div>
+                    <div class="step-title">Project Setup</div>
+                    <div class="step-description">
+                        You've installed BMAD! All the tools and templates are ready to use.
+                    </div>
+                    <div class="file-info">
+                        <strong>Files Created:</strong>
+                        <div class="file-path">docs/global-bmad-rules.md</div>
+                        <div class="file-path">docs/BMAD.md</div>
+                        <div class="file-path">reference/ (all agent files)</div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Analysis -->
+                <div class="workflow-step current">
+                    <div class="step-header">
+                        <span class="step-number">Step 2</span>
+                        <span class="step-status current">DO THIS NEXT</span>
+                    </div>
+                    <div class="step-title">Project Analysis & Brainstorming</div>
+                    <div class="step-description">
+                        <strong>What to do:</strong> Think about what you want to build. The BMAD Analyst will help you explore your idea and write it down.
+                    </div>
+                    <div class="step-action">
+                        Say: "Act as BMAD Analyst"
+                    </div>
+                    <div class="file-info">
+                        <strong>Files You'll Create:</strong>
+                        <div class="file-path">docs/brainstorming-session.md (your ideas)</div>
+                        <div class="file-path">docs/project-brief.md (summary of what to build)</div>
+                    </div>
+                    <div class="help-box">
+                        <h3>Need Help?</h3>
+                        <ul>
+                            <li>Open your AI assistant (Cursor, Windsurf, etc.)</li>
+                            <li>Type: "Act as BMAD Analyst"</li>
+                            <li>The AI will ask you questions about your project</li>
+                            <li>Answer the questions - it helps you think clearly!</li>
+                            <li>Save the conversation to the files shown above</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Step 3: Research (Optional) -->
+                <div class="workflow-step pending">
+                    <div class="step-header">
+                        <span class="step-number">Step 3</span>
+                        <span class="step-status pending">OPTIONAL</span>
+                    </div>
+                    <div class="step-title">Market Research</div>
+                    <div class="step-description">
+                        Look at similar projects and see what makes them good or bad. This is optional but helpful!
+                    </div>
+                    <div class="step-action secondary">
+                        Say: "Act as BMAD Analyst. Create research prompt"
+                    </div>
+                    <div class="file-info">
+                        <strong>File You'll Create:</strong>
+                        <div class="file-path">docs/market-research.md</div>
+                    </div>
+                </div>
+
+                <!-- Step 4: PRD -->
+                <div class="workflow-step pending">
+                    <div class="step-header">
+                        <span class="step-number">Step 4</span>
+                        <span class="step-status pending">COMING NEXT</span>
+                    </div>
+                    <div class="step-title">Create Product Requirements (PRD)</div>
+                    <div class="step-description">
+                        <strong>What to do:</strong> Turn your idea into a detailed plan with all the features you want.
+                    </div>
+                    <div class="step-action secondary">
+                        Say: "Act as BMAD Product Manager"
+                    </div>
+                    <div class="file-info">
+                        <strong>File You'll Create:</strong>
+                        <div class="file-path">docs/prd.md (detailed feature list)</div>
+                    </div>
+                </div>
+
+                <!-- Step 5: UX Design -->
+                <div class="workflow-step pending">
+                    <div class="step-header">
+                        <span class="step-number">Step 5</span>
+                        <span class="step-status pending">COMING NEXT</span>
+                    </div>
+                    <div class="step-title">Design User Interface (If You Have a UI)</div>
+                    <div class="step-description">
+                        <strong>What to do:</strong> Plan how your app will look and how users will use it.
+                    </div>
+                    <div class="step-action secondary">
+                        Say: "Act as BMAD UX Expert"
+                    </div>
+                    <div class="file-info">
+                        <strong>File You'll Create:</strong>
+                        <div class="file-path">docs/front-end-spec.md (UI design plan)</div>
+                    </div>
+                </div>
+
+                <!-- Step 6: Architecture -->
+                <div class="workflow-step pending">
+                    <div class="step-header">
+                        <span class="step-number">Step 6</span>
+                        <span class="step-status pending">COMING NEXT</span>
+                    </div>
+                    <div class="step-title">Design System Architecture</div>
+                    <div class="step-description">
+                        <strong>What to do:</strong> Decide what technologies to use and how everything fits together.
+                    </div>
+                    <div class="step-action secondary">
+                        Say: "Act as BMAD Architect"
+                    </div>
+                    <div class="file-info">
+                        <strong>File You'll Create:</strong>
+                        <div class="file-path">docs/architecture.md (technical blueprint)</div>
+                    </div>
+                </div>
+
+                <!-- Step 7: Shard into Epics -->
+                <div class="workflow-step pending">
+                    <div class="step-header">
+                        <span class="step-number">Step 7</span>
+                        <span class="step-status pending">COMING NEXT</span>
+                    </div>
+                    <div class="step-title">Break Into Smaller Pieces (Epics)</div>
+                    <div class="step-description">
+                        <strong>What to do:</strong> Break your big plan into smaller, manageable chunks called "epics".
+                    </div>
+                    <div class="step-action secondary">
+                        Say: "Act as BMAD Product Owner. Shard the PRD"
+                    </div>
+                    <div class="file-info">
+                        <strong>Files You'll Create:</strong>
+                        <div class="file-path">docs/epics/epic-001-[name].md</div>
+                        <div class="file-path">docs/epics/epic-002-[name].md</div>
+                        <div class="file-path">...and more epics</div>
+                    </div>
+                </div>
+
+                <!-- Step 8: Create Stories -->
+                <div class="workflow-step pending">
+                    <div class="step-header">
+                        <span class="step-number">Step 8</span>
+                        <span class="step-status pending">COMING NEXT</span>
+                    </div>
+                    <div class="step-title">Create Detailed Tasks (Stories)</div>
+                    <div class="step-description">
+                        <strong>What to do:</strong> Break each epic into super-detailed tasks that tell you exactly what to code.
+                    </div>
+                    <div class="step-action secondary">
+                        Say: "Act as BMAD Scrum Master. Create story from epic-001"
+                    </div>
+                    <div class="file-info">
+                        <strong>Files You'll Create:</strong>
+                        <div class="file-path">docs/stories/story-001-[name].md</div>
+                        <div class="file-path">docs/stories/story-002-[name].md</div>
+                        <div class="file-path">...one story at a time</div>
+                    </div>
+                </div>
+
+                <!-- Step 9: Code It -->
+                <div class="workflow-step pending">
+                    <div class="step-header">
+                        <span class="step-number">Step 9</span>
+                        <span class="step-status pending">COMING NEXT</span>
+                    </div>
+                    <div class="step-title">Write the Code (Implementation)</div>
+                    <div class="step-description">
+                        <strong>What to do:</strong> Now you code! The Developer agent will help you write code, tests, and documentation - one story at a time.
+                    </div>
+                    <div class="step-action secondary">
+                        Say: "Act as BMAD Developer. Implement story-001"
+                    </div>
+                    <div class="file-info">
+                        <strong>Files You'll Create:</strong>
+                        <div class="file-path">src/ (your source code)</div>
+                        <div class="file-path">tests/ (your tests)</div>
+                        <div class="file-path">+ Dev Notes in each story file</div>
+                    </div>
+                </div>
+
+                <!-- Step 10: Test & Review -->
+                <div class="workflow-step pending">
+                    <div class="step-header">
+                        <span class="step-number">Step 10</span>
+                        <span class="step-status pending">COMING NEXT</span>
+                    </div>
+                    <div class="step-title">Quality Check (Testing)</div>
+                    <div class="step-description">
+                        <strong>What to do:</strong> Make sure everything works correctly. The QA agent will help you test thoroughly.
+                    </div>
+                    <div class="step-action secondary">
+                        Say: "Act as BMAD QA. Review story-001"
+                    </div>
+                    <div class="file-info">
+                        <strong>What Happens:</strong>
+                        <div class="file-path">All tests run and pass</div>
+                        <div class="file-path">Code is checked for errors</div>
+                        <div class="file-path">QA report added to story</div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">All 10 BMAD Agents (Your AI Helpers)</h2>
+                <div class="agent-list">
+                    <div class="agent-card">
+                        <h4>1. Analyst</h4>
+                        <p>Helps you brainstorm</p>
+                        <code>"Act as BMAD Analyst"</code>
+                    </div>
+                    <div class="agent-card">
+                        <h4>2. Product Manager</h4>
+                        <p>Creates requirements</p>
+                        <code>"Act as BMAD PM"</code>
+                    </div>
+                    <div class="agent-card">
+                        <h4>3. UX Expert</h4>
+                        <p>Designs user interface</p>
+                        <code>"Act as BMAD UX Expert"</code>
+                    </div>
+                    <div class="agent-card">
+                        <h4>4. Architect</h4>
+                        <p>Plans technical system</p>
+                        <code>"Act as BMAD Architect"</code>
+                    </div>
+                    <div class="agent-card">
+                        <h4>5. Product Owner</h4>
+                        <p>Organizes documents</p>
+                        <code>"Act as BMAD PO"</code>
+                    </div>
+                    <div class="agent-card">
+                        <h4>6. Scrum Master</h4>
+                        <p>Creates detailed tasks</p>
+                        <code>"Act as BMAD SM"</code>
+                    </div>
+                    <div class="agent-card">
+                        <h4>7. Developer</h4>
+                        <p>Writes the code</p>
+                        <code>"Act as BMAD Developer"</code>
+                    </div>
+                    <div class="agent-card">
+                        <h4>8. QA</h4>
+                        <p>Tests everything</p>
+                        <code>"Act as BMAD QA"</code>
+                    </div>
+                    <div class="agent-card">
+                        <h4>9. Master</h4>
+                        <p>General help</p>
+                        <code>"Act as BMAD Master"</code>
+                    </div>
+                    <div class="agent-card">
+                        <h4>10. Orchestrator</h4>
+                        <p>Guides workflow</p>
+                        <code>"Act as BMAD Orchestrator"</code>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <h2 class="section-title">Quick Reference: File Locations</h2>
+                <div class="help-box">
+                    <h3>Where Everything Goes</h3>
+                    <ul>
+                        <li><strong>docs/</strong> - All your planning documents go here</li>
+                        <li><strong>docs/epics/</strong> - Big feature chunks</li>
+                        <li><strong>docs/stories/</strong> - Detailed tasks</li>
+                        <li><strong>src/</strong> - Your actual code</li>
+                        <li><strong>tests/</strong> - Your test code</li>
+                        <li><strong>reference/</strong> - BMAD helper files (don't change these)</li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+
+        <div class="footer">
+            <p><strong>BMAD Method</strong> - Version 4.44.1 (Universal)</p>
+            <p style="margin-top: 10px; opacity: 0.8;">Last Updated: <span id="lastUpdated"></span></p>
+            <p style="margin-top: 15px; opacity: 0.7;">Copyright 2025 BMad Code, LLC</p>
+        </div>
+    </div>
+
+    <script>
+        // Update project name
+        document.getElementById('projectName').addEventListener('change', function(e) {
+            localStorage.setItem('bmadProjectName', e.target.value);
+        });
+
+        // Load saved project name
+        const savedName = localStorage.getItem('bmadProjectName');
+        if (savedName) {
+            document.getElementById('projectName').value = savedName;
+        }
+
+        // Update timestamp
+        function updateTime() {
+            document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
+        }
+        updateTime();
+        setInterval(updateTime, 60000);
+
+        // Save project name on page unload
+        window.addEventListener('beforeunload', function() {
+            const projectName = document.getElementById('projectName').value;
+            localStorage.setItem('bmadProjectName', projectName);
+        });
+    </script>
+</body>
+</html>
