@@ -3,642 +3,1430 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BMAD Project Dashboard - Easy Guide</title>
+    <title>BMAD Dashboard v9 - Smart Project Tracking with Auto-Refresh</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            color: #333;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            background: #0f1419;
+            color: #e0e6ed;
             overflow: hidden;
         }
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .container { display: flex; height: 100vh; }
+        
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            min-width: 280px;
+            max-width: 280px;
+            background: linear-gradient(135deg, #1a1f2e 0%, #16213e 100%);
             color: white;
-            padding: 30px;
-            text-align: center;
+            padding: 20px 15px;
+            overflow-y: auto;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(102, 126, 234, 0.2);
         }
-        .header h1 { 
-            font-size: 2.5em;
-            margin-bottom: 10px;
-        }
-        .project-name-edit {
-            margin: 20px 0;
-            padding: 15px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 10px;
-        }
-        .project-name-edit label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
-        .project-name-edit input {
-            width: 100%;
-            max-width: 500px;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            font-size: 1.1em;
-            text-align: center;
-        }
-        .quick-status {
-            background: #f8f9fa;
-            padding: 25px;
-            border-bottom: 4px solid #667eea;
-        }
-        .quick-status h2 {
-            color: #667eea;
-            margin-bottom: 15px;
-            font-size: 1.3em;
-        }
-        .status-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
-        }
-        .status-card {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .status-card h3 {
-            color: #667eea;
-            font-size: 0.9em;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-        .status-card p {
-            font-size: 1.3em;
-            font-weight: bold;
-            color: #2d3748;
-        }
-        .content {
-            padding: 30px;
-        }
-        .section {
-            margin-bottom: 35px;
-        }
-        .section-title {
-            color: #667eea;
-            font-size: 1.8em;
+        
+        .sidebar-header {
             margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
         }
-        .workflow-step {
-            background: #f8f9fa;
-            margin-bottom: 15px;
-            border-radius: 10px;
-            padding: 20px;
-            border-left: 6px solid #cbd5e0;
-            transition: all 0.3s ease;
-        }
-        .workflow-step:hover {
-            transform: translateX(5px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .workflow-step.completed {
-            border-left-color: #48bb78;
-            background: #f0fff4;
-        }
-        .workflow-step.current {
-            border-left-color: #4299e1;
-            background: #ebf8ff;
-            box-shadow: 0 4px 12px rgba(66, 153, 225, 0.3);
-        }
-        .workflow-step.pending {
-            border-left-color: #cbd5e0;
-            opacity: 0.7;
-        }
-        .step-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-        }
-        .step-number {
-            font-size: 1.5em;
+        
+        .sidebar-logo {
+            font-size: 1.4em;
             font-weight: bold;
-            color: #667eea;
-        }
-        .step-status {
-            padding: 6px 14px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 600;
-            color: white;
-        }
-        .step-status.completed { background: #48bb78; }
-        .step-status.current { background: #4299e1; }
-        .step-status.pending { background: #a0aec0; }
-        .step-title {
-            font-size: 1.3em;
-            font-weight: 600;
-            color: #2d3748;
-            margin-bottom: 8px;
-        }
-        .step-description {
-            color: #666;
-            line-height: 1.6;
-            margin-bottom: 12px;
-        }
-        .step-action {
-            background: #667eea;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 6px;
-            display: inline-block;
-            font-weight: 600;
-            margin-top: 10px;
-        }
-        .step-action.secondary {
-            background: #718096;
-        }
-        .file-info {
-            background: white;
-            padding: 12px;
-            border-radius: 6px;
-            margin-top: 12px;
-            border: 1px solid #e2e8f0;
-        }
-        .file-info strong {
-            color: #667eea;
-            display: block;
-            margin-bottom: 8px;
-        }
-        .file-path {
-            font-family: 'Courier New', monospace;
-            background: #f7fafc;
-            padding: 8px;
-            border-radius: 4px;
-            font-size: 0.9em;
-            color: #2d3748;
-            border-left: 3px solid #667eea;
-            margin-bottom: 5px;
-            word-break: break-all;
-        }
-        .help-box {
-            background: #ebf4ff;
-            border-left: 4px solid #4299e1;
-            padding: 20px;
-            border-radius: 8px;
-            margin-top: 20px;
-        }
-        .help-box h3 {
-            color: #2c5282;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin-bottom: 10px;
         }
-        .help-box ul {
-            color: #2d3748;
-            line-height: 1.8;
+        
+        .project-status {
+            font-size: 0.75em;
+            padding: 8px;
+            background: rgba(72, 187, 120, 0.15);
+            border-radius: 4px;
+            color: #48bb78;
+            border-left: 2px solid #48bb78;
+            word-break: break-all;
+            margin-top: 6px;
         }
-        .agent-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+        
+        .project-path-display {
+            font-size: 0.7em;
+            padding: 8px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 4px;
+            color: #a0aec0;
+            border-left: 2px solid #667eea;
+            word-break: break-all;
+            margin-top: 6px;
+            max-height: 60px;
+            overflow-y: auto;
         }
-        .agent-card {
-            background: white;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid #667eea;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-        .agent-card h4 {
-            color: #667eea;
-            margin-bottom: 5px;
-        }
-        .agent-card code {
-            background: #f7fafc;
-            padding: 2px 6px;
-            border-radius: 3px;
-            font-size: 0.9em;
-        }
-        .footer {
-            background: #2d3748;
+        
+        .search-box {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 6px;
             color: white;
-            padding: 25px;
-            text-align: center;
+            margin: 15px 0;
+            font-size: 0.85em;
         }
-        .legend {
-            background: #fff5f5;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
-            justify-content: center;
+        
+        .search-box::placeholder { color: rgba(255,255,255,0.5); }
+        
+        .sidebar-nav {
+            list-style: none;
+            flex: 1;
+            overflow-y: auto;
         }
-        .legend-item {
+        
+        .sidebar-nav li { margin-bottom: 6px; }
+        
+        .sidebar-nav button {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid transparent;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+            font-weight: 500;
             display: flex;
             align-items: center;
             gap: 8px;
+            white-space: nowrap;
         }
-        .legend-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
+        
+        .sidebar-nav button:hover {
+            background: rgba(102, 126, 234, 0.15);
+            border-color: rgba(102, 126, 234, 0.3);
         }
-        .legend-dot.completed { background: #48bb78; }
-        .legend-dot.current { background: #4299e1; }
-        .legend-dot.pending { background: #a0aec0; }
-        .beginner-tip {
-            background: #fef5e7;
-            border-left: 4px solid #f39c12;
-            padding: 15px;
-            border-radius: 6px;
+        
+        .sidebar-nav button.active {
+            background: rgba(102, 126, 234, 0.25);
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+        }
+        
+        .sidebar-icon { font-size: 0.95em; min-width: 18px; }
+        .file-count { margin-left: auto; font-size: 0.75em; background: rgba(102, 126, 234, 0.3); padding: 2px 6px; border-radius: 3px; min-width: 30px; text-align: center; }
+        
+        /* PROJECT DETAILS SECTION */
+        .project-details-section {
             margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(102, 126, 234, 0.2);
         }
-        .beginner-tip strong {
-            color: #d68910;
-            display: block;
+        
+        .details-title {
+            font-size: 0.8em;
+            color: #a0aec0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .detail-item {
+            background: rgba(102, 126, 234, 0.08);
+            border: 1px solid rgba(102, 126, 234, 0.15);
+            border-radius: 6px;
+            padding: 10px;
             margin-bottom: 8px;
+            font-size: 0.8em;
+        }
+        
+        .detail-label {
+            color: #a0aec0;
+            font-size: 0.75em;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+        
+        .detail-value {
+            color: #e0e6ed;
+            word-break: break-all;
+            font-size: 0.85em;
+            line-height: 1.4;
+        }
+        
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: #0f1419;
+            min-width: 0;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a1f2e 0%, #16213e 100%);
+            padding: 15px 25px;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            flex-shrink: 0;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .header-left {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+        }
+        
+        .header-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header-path {
+            font-size: 0.8em;
+            color: #a0aec0;
+            word-break: break-all;
+        }
+        
+        .header-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
+        
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            background: rgba(72, 187, 120, 0.2);
+            color: #48bb78;
+            border: 1px solid rgba(72, 187, 120, 0.3);
+            white-space: nowrap;
+        }
+        
+        /* THREE PANEL LAYOUT */
+        .content-panels {
+            display: flex;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+        
+        .workflow-panel {
+            width: 350px;
+            min-width: 350px;
+            max-width: 350px;
+            background: #141824;
+            overflow-y: auto;
+            border-right: 1px solid rgba(102, 126, 234, 0.2);
+            padding: 15px;
+        }
+        
+        .content-panel {
+            flex: 1;
+            background: #0f1419;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 20px;
+            min-width: 0;
+        }
+        
+        .preview-panel {
+            width: 320px;
+            min-width: 320px;
+            max-width: 320px;
+            background: #141824;
+            padding: 15px;
+            overflow-y: auto;
+            border-left: 1px solid rgba(102, 126, 234, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        /* VIRTUAL FOLDER STRUCTURE */
+        .folder-tree {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            line-height: 1.6;
+        }
+        
+        .folder-item {
+            cursor: pointer;
+            padding: 8px;
+            margin: 4px 0;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .folder-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-left-color: #667eea;
+        }
+        
+        .folder-item.active {
+            background: rgba(102, 126, 234, 0.2);
+            border-left-color: #667eea;
+            font-weight: 600;
+        }
+        
+        .folder-epic {
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 12px;
+            padding: 10px 8px;
+            background: rgba(102, 126, 234, 0.08);
+            border-radius: 6px;
+        }
+        
+        .folder-epic.missing {
+            color: #f6ad55;
+            opacity: 0.7;
+        }
+        
+        .folder-story {
+            color: #764ba2;
+            margin-left: 15px;
+            margin-top: 6px;
+            padding: 6px 8px;
+            background: rgba(118, 75, 162, 0.05);
+            border-radius: 4px;
+        }
+        
+        /* Epic grouping styles */
+        .epic-children {
+            margin-left: 20px;
+            border-left: 2px solid rgba(102, 126, 234, 0.2);
+            padding-left: 10px;
+            margin-top: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .folder-epic-variant {
+            color: #a0aec0;
+            margin-top: 4px;
+            padding: 6px 8px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        
+        .folder-epic-variant.primary {
+            font-weight: 600;
+            color: #cbd5e1;
+            background: rgba(102, 126, 234, 0.08);
+        }
+        
+        .folder-stories-header, .folder-substories-header {
+            color: #8b5cf6;
+            font-weight: 600;
+            margin-top: 12px;
+            margin-bottom: 4px;
+            padding: 6px 8px;
+            background: rgba(139, 92, 246, 0.08);
+            border-radius: 4px;
+            font-size: 0.85em;
+            cursor: default;
+            pointer-events: none;
+        }
+        
+        .folder-substory {
+            color: #9ca3af;
+            margin-left: 15px;
+            margin-top: 4px;
+            padding: 6px 8px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        
+        .expand-icon {
+            display: inline-block;
+            transition: transform 0.2s ease;
+            font-size: 0.8em;
+            margin-right: 4px;
+        }
+        
+        .expand-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+        
+        .folder-analysis {
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 12px;
+            padding: 10px 8px;
+            background: rgba(102, 126, 234, 0.08);
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .folder-analysis.expanded ~ .analysis-items {
+            display: block;
+        }
+        
+        .analysis-items {
+            display: none;
+        }
+        
+        .analysis-item {
+            color: #cbd5e1;
+            margin-left: 15px;
+            margin-top: 4px;
+            padding: 6px 8px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        
+        .folder-icon { margin-right: 6px; }
+        .badge { 
+            display: inline-block;
+            background: rgba(246, 173, 85, 0.3);
+            color: #f6ad55;
+            padding: 1px 6px;
+            border-radius: 2px;
+            font-size: 0.75em;
+            margin-left: 6px;
+            font-weight: 600;
+        }
+        
+        .badge.complete {
+            background: rgba(72, 187, 120, 0.3);
+            color: #48bb78;
+        }
+        
+        .badge.missing {
+            background: rgba(246, 173, 85, 0.3);
+            color: #f6ad55;
+        }
+        
+        /* MARKDOWN CONTENT */
+        .markdown-content {
+            color: #e0e6ed;
+            line-height: 1.7;
+            max-width: 100%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        
+        .markdown-content h1 {
+            font-size: 2em;
+            margin: 20px 0 15px 0;
+            color: #667eea;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        .markdown-content h2 {
+            font-size: 1.6em;
+            margin: 18px 0 12px 0;
+            color: #764ba2;
+        }
+        
+        .markdown-content h3 {
+            font-size: 1.3em;
+            margin: 15px 0 10px 0;
+            color: #8b5cf6;
+        }
+        
+        .markdown-content p {
+            margin: 12px 0;
+            color: #cbd5e1;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        
+        .markdown-content code {
+            background: rgba(102, 126, 234, 0.15);
+            color: #fbbf24;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            word-break: break-all;
+        }
+        
+        .markdown-content pre {
+            background: #1a1f2e;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        /* PREVIEW PANEL - FIXED LAYOUT */
+        .preview-section {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            border-left: 3px solid #667eea;
+            flex-shrink: 0;
+            min-height: auto;
+        }
+        
+        .preview-label {
+            font-size: 0.75em;
+            color: #a0aec0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .preview-value {
+            font-size: 0.9em;
+            color: #e0e6ed;
+            word-break: break-word;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        
+        .stat-item {
+            background: rgba(255,255,255,0.05);
+            padding: 8px;
+            border-radius: 4px;
+            border-left: 2px solid #764ba2;
+        }
+        
+        .stat-label {
+            font-size: 0.7em;
+            color: #a0aec0;
+            text-transform: uppercase;
+        }
+        
+        .stat-value {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #667eea;
+            margin-top: 4px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s ease;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            color: #667eea;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75em;
+            transition: all 0.2s ease;
+        }
+        
+        .action-btn:hover {
+            background: rgba(102, 126, 234, 0.4);
+            border-color: #667eea;
+        }
+        
+        .empty-state {
+            padding: 40px 20px;
+            text-align: center;
+            color: #a0aec0;
+        }
+        
+        .empty-state-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+        }
+        
+        .refresh-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(72, 187, 120, 0.2);
+            border: 1px solid rgba(72, 187, 120, 0.5);
+            color: #48bb78;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 0.9em;
+            animation: slideIn 0.3s ease;
+            z-index: 1000;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(400px); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.3);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(102, 126, 234, 0.5);
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div class="header">
-            <h1>BMAD Project Dashboard</h1>
-            <p>Visual Workflow Tracker - Easy Guide for Beginners</p>
-            <div class="project-name-edit">
-                <label for="projectName">Your Project Name:</label>
-                <input type="text" id="projectName" value="My BMAD Project" placeholder="Enter your project name">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">🎯 BMAD v9</div>
+                <div class="project-status" id="projectStatus">✅ Ready</div>
+                <div class="project-path-display" id="projectPath" style="display:none;"></div>
             </div>
-        </div>
-
-        <div class="quick-status">
-            <h2>Quick Status Overview</h2>
-            <div class="beginner-tip">
-                <strong>For Beginners:</strong>
-                This dashboard shows you exactly where you are in building your project. Start from Step 1 and work your way down. Green means done, Blue means you're here now, Gray means not started yet.
-            </div>
-            <div class="status-grid">
-                <div class="status-card">
-                    <h3>Current Phase</h3>
-                    <p id="currentPhase">Setup</p>
-                </div>
-                <div class="status-card">
-                    <h3>Steps Completed</h3>
-                    <p id="stepsCompleted">1/10</p>
-                </div>
-                <div class="status-card">
-                    <h3>Next Action</h3>
-                    <p id="nextAction">Start Analysis</p>
-                </div>
-                <div class="status-card">
-                    <h3>Progress</h3>
-                    <p id="progressPercent">10%</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="content">
-            <section class="section">
-                <h2 class="section-title">Your Project Workflow (10 Easy Steps)</h2>
+            
+            <input type="text" id="searchBox" class="search-box" placeholder="Search...">
+            
+            <ul class="sidebar-nav" id="sidebarNav">
+                <li><button class="nav-btn active" data-section="workflow">
+                    <span class="sidebar-icon">🔄</span><span>Workflow</span><span class="file-count" id="count-workflow">0</span>
+                </button></li>
+                <li><button class="nav-btn" data-section="overview">
+                    <span class="sidebar-icon">📊</span><span>Overview</span>
+                </button></li>
+                <li><button class="nav-btn" data-section="prd">
+                    <span class="sidebar-icon">📋</span><span>PRD</span>
+                </button></li>
+                <li><button class="nav-btn" data-section="others">
+                    <span class="sidebar-icon">📂</span><span>Others</span><span class="file-count" id="count-others">0</span>
+                </button></li>
+            </ul>
+            
+            <!-- PROJECT DETAILS SECTION -->
+            <div class="project-details-section" id="projectDetails" style="display:none;">
+                <div class="details-title">📊 PROJECT DETAILS</div>
                 
-                <div class="legend">
-                    <div class="legend-item">
-                        <span class="legend-dot completed"></span>
-                        <span>Completed</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-dot current"></span>
-                        <span>You Are Here (Do This Next)</span>
-                    </div>
-                    <div class="legend-item">
-                        <span class="legend-dot pending"></span>
-                        <span>Coming Up Later</span>
-                    </div>
+                <div class="detail-item">
+                    <div class="detail-label">📁 Project Name</div>
+                    <div class="detail-value" id="detail-directory">-</div>
                 </div>
-
-                <!-- Step 1: Setup -->
-                <div class="workflow-step completed">
-                    <div class="step-header">
-                        <span class="step-number">Step 1</span>
-                        <span class="step-status completed">COMPLETED</span>
-                    </div>
-                    <div class="step-title">Project Setup</div>
-                    <div class="step-description">
-                        You've installed BMAD! All the tools and templates are ready to use.
-                    </div>
-                    <div class="file-info">
-                        <strong>Files Created:</strong>
-                        <div class="file-path">docs/global-bmad-rules.md</div>
-                        <div class="file-path">docs/BMAD.md</div>
-                        <div class="file-path">reference/ (all agent files)</div>
-                    </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">📍 Full Path</div>
+                    <div class="detail-value" id="detail-location" style="font-family: 'Courier New', monospace; font-size: 0.8em; word-break: break-all; background: rgba(102, 126, 234, 0.05); padding: 6px; border-radius: 4px; margin-top: 4px;">-</div>
                 </div>
-
-                <!-- Step 2: Analysis -->
-                <div class="workflow-step current">
-                    <div class="step-header">
-                        <span class="step-number">Step 2</span>
-                        <span class="step-status current">DO THIS NEXT</span>
-                    </div>
-                    <div class="step-title">Project Analysis & Brainstorming</div>
-                    <div class="step-description">
-                        <strong>What to do:</strong> Think about what you want to build. The BMAD Analyst will help you explore your idea and write it down.
-                    </div>
-                    <div class="step-action">
-                        Say: "Act as BMAD Analyst"
-                    </div>
-                    <div class="file-info">
-                        <strong>Files You'll Create:</strong>
-                        <div class="file-path">docs/brainstorming-session.md (your ideas)</div>
-                        <div class="file-path">docs/project-brief.md (summary of what to build)</div>
-                    </div>
-                    <div class="help-box">
-                        <h3>Need Help?</h3>
-                        <ul>
-                            <li>Open your AI assistant (Cursor, Windsurf, etc.)</li>
-                            <li>Type: "Act as BMAD Analyst"</li>
-                            <li>The AI will ask you questions about your project</li>
-                            <li>Answer the questions - it helps you think clearly!</li>
-                            <li>Save the conversation to the files shown above</li>
-                        </ul>
-                    </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">📝 Last Updated</div>
+                    <div class="detail-value" id="detail-last-file">-</div>
+                    <div class="detail-value" id="detail-last-path" style="font-size: 0.75em; color: #a0aec0; margin-top: 4px;">-</div>
                 </div>
-
-                <!-- Step 3: Research (Optional) -->
-                <div class="workflow-step pending">
-                    <div class="step-header">
-                        <span class="step-number">Step 3</span>
-                        <span class="step-status pending">OPTIONAL</span>
-                    </div>
-                    <div class="step-title">Market Research</div>
-                    <div class="step-description">
-                        Look at similar projects and see what makes them good or bad. This is optional but helpful!
-                    </div>
-                    <div class="step-action secondary">
-                        Say: "Act as BMAD Analyst. Create research prompt"
-                    </div>
-                    <div class="file-info">
-                        <strong>File You'll Create:</strong>
-                        <div class="file-path">docs/market-research.md</div>
-                    </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">⏰ Update Time</div>
+                    <div class="detail-value" id="detail-time">-</div>
                 </div>
-
-                <!-- Step 4: PRD -->
-                <div class="workflow-step pending">
-                    <div class="step-header">
-                        <span class="step-number">Step 4</span>
-                        <span class="step-status pending">COMING NEXT</span>
-                    </div>
-                    <div class="step-title">Create Product Requirements (PRD)</div>
-                    <div class="step-description">
-                        <strong>What to do:</strong> Turn your idea into a detailed plan with all the features you want.
-                    </div>
-                    <div class="step-action secondary">
-                        Say: "Act as BMAD Product Manager"
-                    </div>
-                    <div class="file-info">
-                        <strong>File You'll Create:</strong>
-                        <div class="file-path">docs/prd.md (detailed feature list)</div>
-                    </div>
-                </div>
-
-                <!-- Step 5: UX Design -->
-                <div class="workflow-step pending">
-                    <div class="step-header">
-                        <span class="step-number">Step 5</span>
-                        <span class="step-status pending">COMING NEXT</span>
-                    </div>
-                    <div class="step-title">Design User Interface (If You Have a UI)</div>
-                    <div class="step-description">
-                        <strong>What to do:</strong> Plan how your app will look and how users will use it.
-                    </div>
-                    <div class="step-action secondary">
-                        Say: "Act as BMAD UX Expert"
-                    </div>
-                    <div class="file-info">
-                        <strong>File You'll Create:</strong>
-                        <div class="file-path">docs/front-end-spec.md (UI design plan)</div>
-                    </div>
-                </div>
-
-                <!-- Step 6: Architecture -->
-                <div class="workflow-step pending">
-                    <div class="step-header">
-                        <span class="step-number">Step 6</span>
-                        <span class="step-status pending">COMING NEXT</span>
-                    </div>
-                    <div class="step-title">Design System Architecture</div>
-                    <div class="step-description">
-                        <strong>What to do:</strong> Decide what technologies to use and how everything fits together.
-                    </div>
-                    <div class="step-action secondary">
-                        Say: "Act as BMAD Architect"
-                    </div>
-                    <div class="file-info">
-                        <strong>File You'll Create:</strong>
-                        <div class="file-path">docs/architecture.md (technical blueprint)</div>
-                    </div>
-                </div>
-
-                <!-- Step 7: Shard into Epics -->
-                <div class="workflow-step pending">
-                    <div class="step-header">
-                        <span class="step-number">Step 7</span>
-                        <span class="step-status pending">COMING NEXT</span>
-                    </div>
-                    <div class="step-title">Break Into Smaller Pieces (Epics)</div>
-                    <div class="step-description">
-                        <strong>What to do:</strong> Break your big plan into smaller, manageable chunks called "epics".
-                    </div>
-                    <div class="step-action secondary">
-                        Say: "Act as BMAD Product Owner. Shard the PRD"
-                    </div>
-                    <div class="file-info">
-                        <strong>Files You'll Create:</strong>
-                        <div class="file-path">docs/epics/epic-001-[name].md</div>
-                        <div class="file-path">docs/epics/epic-002-[name].md</div>
-                        <div class="file-path">...and more epics</div>
-                    </div>
-                </div>
-
-                <!-- Step 8: Create Stories -->
-                <div class="workflow-step pending">
-                    <div class="step-header">
-                        <span class="step-number">Step 8</span>
-                        <span class="step-status pending">COMING NEXT</span>
-                    </div>
-                    <div class="step-title">Create Detailed Tasks (Stories)</div>
-                    <div class="step-description">
-                        <strong>What to do:</strong> Break each epic into super-detailed tasks that tell you exactly what to code.
-                    </div>
-                    <div class="step-action secondary">
-                        Say: "Act as BMAD Scrum Master. Create story from epic-001"
-                    </div>
-                    <div class="file-info">
-                        <strong>Files You'll Create:</strong>
-                        <div class="file-path">docs/stories/story-001-[name].md</div>
-                        <div class="file-path">docs/stories/story-002-[name].md</div>
-                        <div class="file-path">...one story at a time</div>
-                    </div>
-                </div>
-
-                <!-- Step 9: Code It -->
-                <div class="workflow-step pending">
-                    <div class="step-header">
-                        <span class="step-number">Step 9</span>
-                        <span class="step-status pending">COMING NEXT</span>
-                    </div>
-                    <div class="step-title">Write the Code (Implementation)</div>
-                    <div class="step-description">
-                        <strong>What to do:</strong> Now you code! The Developer agent will help you write code, tests, and documentation - one story at a time.
-                    </div>
-                    <div class="step-action secondary">
-                        Say: "Act as BMAD Developer. Implement story-001"
-                    </div>
-                    <div class="file-info">
-                        <strong>Files You'll Create:</strong>
-                        <div class="file-path">src/ (your source code)</div>
-                        <div class="file-path">tests/ (your tests)</div>
-                        <div class="file-path">+ Dev Notes in each story file</div>
-                    </div>
-                </div>
-
-                <!-- Step 10: Test & Review -->
-                <div class="workflow-step pending">
-                    <div class="step-header">
-                        <span class="step-number">Step 10</span>
-                        <span class="step-status pending">COMING NEXT</span>
-                    </div>
-                    <div class="step-title">Quality Check (Testing)</div>
-                    <div class="step-description">
-                        <strong>What to do:</strong> Make sure everything works correctly. The QA agent will help you test thoroughly.
-                    </div>
-                    <div class="step-action secondary">
-                        Say: "Act as BMAD QA. Review story-001"
-                    </div>
-                    <div class="file-info">
-                        <strong>What Happens:</strong>
-                        <div class="file-path">All tests run and pass</div>
-                        <div class="file-path">Code is checked for errors</div>
-                        <div class="file-path">QA report added to story</div>
-                    </div>
-                </div>
-            </section>
-
-            <section class="section">
-                <h2 class="section-title">All 10 BMAD Agents (Your AI Helpers)</h2>
-                <div class="agent-list">
-                    <div class="agent-card">
-                        <h4>1. Analyst</h4>
-                        <p>Helps you brainstorm</p>
-                        <code>"Act as BMAD Analyst"</code>
-                    </div>
-                    <div class="agent-card">
-                        <h4>2. Product Manager</h4>
-                        <p>Creates requirements</p>
-                        <code>"Act as BMAD PM"</code>
-                    </div>
-                    <div class="agent-card">
-                        <h4>3. UX Expert</h4>
-                        <p>Designs user interface</p>
-                        <code>"Act as BMAD UX Expert"</code>
-                    </div>
-                    <div class="agent-card">
-                        <h4>4. Architect</h4>
-                        <p>Plans technical system</p>
-                        <code>"Act as BMAD Architect"</code>
-                    </div>
-                    <div class="agent-card">
-                        <h4>5. Product Owner</h4>
-                        <p>Organizes documents</p>
-                        <code>"Act as BMAD PO"</code>
-                    </div>
-                    <div class="agent-card">
-                        <h4>6. Scrum Master</h4>
-                        <p>Creates detailed tasks</p>
-                        <code>"Act as BMAD SM"</code>
-                    </div>
-                    <div class="agent-card">
-                        <h4>7. Developer</h4>
-                        <p>Writes the code</p>
-                        <code>"Act as BMAD Developer"</code>
-                    </div>
-                    <div class="agent-card">
-                        <h4>8. QA</h4>
-                        <p>Tests everything</p>
-                        <code>"Act as BMAD QA"</code>
-                    </div>
-                    <div class="agent-card">
-                        <h4>9. Master</h4>
-                        <p>General help</p>
-                        <code>"Act as BMAD Master"</code>
-                    </div>
-                    <div class="agent-card">
-                        <h4>10. Orchestrator</h4>
-                        <p>Guides workflow</p>
-                        <code>"Act as BMAD Orchestrator"</code>
-                    </div>
-                </div>
-            </section>
-
-            <section class="section">
-                <h2 class="section-title">Quick Reference: File Locations</h2>
-                <div class="help-box">
-                    <h3>Where Everything Goes</h3>
-                    <ul>
-                        <li><strong>docs/</strong> - All your planning documents go here</li>
-                        <li><strong>docs/epics/</strong> - Big feature chunks</li>
-                        <li><strong>docs/stories/</strong> - Detailed tasks</li>
-                        <li><strong>src/</strong> - Your actual code</li>
-                        <li><strong>tests/</strong> - Your test code</li>
-                        <li><strong>reference/</strong> - BMAD helper files (don't change these)</li>
-                    </ul>
-                </div>
-            </section>
+            </div>
         </div>
-
-        <div class="footer">
-            <p><strong>BMAD Method</strong> - Version 4.44.1 (Universal)</p>
-            <p style="margin-top: 10px; opacity: 0.8;">Last Updated: <span id="lastUpdated"></span></p>
-            <p style="margin-top: 15px; opacity: 0.7;">Copyright 2025 BMad Code, LLC</p>
+        
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- HEADER -->
+            <div class="header">
+                <div class="header-left">
+                    <div class="header-title" id="headerTitle">🔄 Workflow</div>
+                    <div class="header-path" id="headerPath" style="display:none;"></div>
+                </div>
+                <div class="header-right">
+                    <span class="status-badge" id="projectBadge">Active</span>
+                    <button class="btn" onclick="selectProjectDirectory()">📁 Select Project</button>
+                </div>
+            </div>
+            
+            <!-- CONTENT PANELS -->
+            <div class="content-panels">
+                <!-- WORKFLOW TREE PANEL -->
+                <div class="workflow-panel">
+                    <div id="workflowTree" class="folder-tree"></div>
+                </div>
+                
+                <!-- CONTENT PANEL -->
+                <div class="content-panel" id="contentPanel"></div>
+                
+                <!-- PREVIEW PANEL -->
+                <div class="preview-panel" id="previewPanel"></div>
+            </div>
         </div>
     </div>
-
+    
     <script>
-        // Update project name
-        document.getElementById('projectName').addEventListener('change', function(e) {
-            localStorage.setItem('bmadProjectName', e.target.value);
+        let projectRoot = null;
+        let projectPath = null;
+        let projectFullPath = null;
+        let projectFiles = {};
+        let currentFile = null;
+        let fileCache = {};
+        let epicMap = {};
+        let storyMap = {};
+        let otherFiles = [];
+        let analysisFiles = [];
+        let projectMetadata = { expectedEpics: 0, expectedStories: 0 };
+        let lastModifiedFile = null;
+        let lastModifiedTime = null;
+        let autoRefreshInterval = null;
+        let previousFileState = {};
+        
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                await renderSection(this.dataset.section);
+            });
         });
-
-        // Load saved project name
-        const savedName = localStorage.getItem('bmadProjectName');
-        if (savedName) {
-            document.getElementById('projectName').value = savedName;
+        
+        async function selectProjectDirectory() {
+            try {
+                projectRoot = await window.showDirectoryPicker();
+                projectPath = projectRoot.name || 'Unknown';
+                // Get full path - try multiple methods
+                projectFullPath = await getFullDirectoryPath(projectRoot);
+                console.log('Project path:', projectFullPath);
+                await scanProjectDirectory();
+                updateProjectDisplay();
+                startAutoRefresh();
+                await renderSection('workflow');
+            } catch (error) {
+                console.log('Directory selection cancelled');
+            }
         }
-
-        // Update timestamp
-        function updateTime() {
-            document.getElementById('lastUpdated').textContent = new Date().toLocaleString();
+        
+        async function getFullDirectoryPath(dirHandle) {
+            try {
+                // Method 1: Try using handle.resolve() if available
+                try {
+                    const path = await dirHandle.resolve();
+                    if (path && path.length > 0) {
+                        return path.join('\\');
+                    }
+                } catch (e) {
+                    // Continue to next method
+                }
+                
+                // Method 2: Traverse up collecting names
+                const parts = [];
+                let current = dirHandle;
+                const visited = new Set();
+                let attempts = 0;
+                const maxAttempts = 20; // Prevent infinite loops
+                
+                while (attempts < maxAttempts) {
+                    attempts++;
+                    const handleStr = current.name;
+                    if (visited.has(handleStr)) break;
+                    visited.add(handleStr);
+                    parts.unshift(current.name);
+                    
+                    try {
+                        const parent = await current.getDirectoryHandle('..');
+                        if (parent.name === current.name) break;
+                        current = parent;
+                    } catch (e) {
+                        break;
+                    }
+                }
+                
+                if (parts.length > 0) {
+                    return parts.join('\\');
+                }
+                
+                // Fallback: Just return the folder name
+                return dirHandle.name;
+                
+            } catch (e) {
+                console.log('Path resolution error:', e);
+                return dirHandle.name;
+            }
         }
-        updateTime();
-        setInterval(updateTime, 60000);
-
-        // Save project name on page unload
-        window.addEventListener('beforeunload', function() {
-            const projectName = document.getElementById('projectName').value;
-            localStorage.setItem('bmadProjectName', projectName);
+        
+        function updateProjectDisplay() {
+            const pathElement = document.getElementById('projectPath');
+            const headerPath = document.getElementById('headerPath');
+            const detailsSection = document.getElementById('projectDetails');
+            
+            if (projectPath) {
+                pathElement.textContent = `📁 ${projectPath}`;
+                pathElement.style.display = 'block';
+                headerPath.textContent = `Project: ${projectPath}`;
+                headerPath.style.display = 'block';
+                detailsSection.style.display = 'block';
+                updateProjectDetails();
+            }
+        }
+        
+        function updateProjectDetails() {
+            document.getElementById('detail-directory').textContent = projectPath || 'Unknown';
+            // Always show the full path we captured
+            const displayPath = projectFullPath || projectPath || 'Unknown';
+            document.getElementById('detail-location').textContent = displayPath;
+            console.log('Displaying path:', displayPath);
+            
+            if (lastModifiedFile) {
+                document.getElementById('detail-last-file').textContent = lastModifiedFile.name;
+                document.getElementById('detail-last-path').textContent = `(${lastModifiedFile.path})`;
+            }
+            
+            if (lastModifiedTime) {
+                const timeStr = new Date(lastModifiedTime).toLocaleString();
+                const relativeTime = getRelativeTime(lastModifiedTime);
+                document.getElementById('detail-time').textContent = `${timeStr}\n(${relativeTime})`;
+            }
+        }
+        
+        function getRelativeTime(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            if (seconds < 60) return 'just now';
+            const minutes = Math.floor(seconds / 60);
+            if (minutes < 60) return `${minutes} minute${minutes > 1 ? 's' : ''} ago`;
+            const hours = Math.floor(minutes / 60);
+            if (hours < 24) return `${hours} hour${hours > 1 ? 's' : ''} ago`;
+            const days = Math.floor(hours / 24);
+            return `${days} day${days > 1 ? 's' : ''} ago`;
+        }
+        
+        async function scanProjectDirectory() {
+            if (!projectRoot) return;
+            projectFiles = { prd: null, epics: [], stories: [] };
+            epicMap = {};
+            storyMap = {};
+            fileCache = {};
+            otherFiles = [];
+            analysisFiles = [];
+            
+            try {
+                const docsDir = await projectRoot.getDirectoryHandle('docs').catch(() => null);
+                if (!docsDir) {
+                    updateCounts();
+                    return;
+                }
+                
+                await readProjectMetadata(docsDir);
+                
+                // Scan standard docs
+                const docFiles = ['brainstorming-session.md', 'project-brief.md', 'prd.md', 'market-research.md', 'front-end-spec.md', 'architecture.md'];
+                for (const file of docFiles) {
+                    try {
+                        const handle = await docsDir.getFileHandle(file);
+                        const fileData = await handle.getFile();
+                        const content = await fileData.text();
+                        const modTime = new Date(fileData.lastModified);
+                        const item = { name: file, path: `docs/${file}`, modified: modTime, size: fileData.size, content };
+                        
+                        if (file === 'prd.md') projectFiles.prd = item;
+                        else analysisFiles.push(item);
+                        
+                        fileCache[`docs/${file}`] = content;
+                        trackModified(item, modTime);
+                    } catch (e) {}
+                }
+                
+                // Scan epics - group by epic number
+                try {
+                    const epicsDir = await docsDir.getDirectoryHandle('epics');
+                    for await (const [name, handle] of epicsDir.entries()) {
+                        if (name.endsWith('.md')) {
+                            const fileData = await handle.getFile();
+                            const content = await fileData.text();
+                            const modTime = new Date(fileData.lastModified);
+                            const item = { name, path: `docs/epics/${name}`, modified: modTime, size: fileData.size, content };
+                            projectFiles.epics.push(item);
+                            fileCache[`docs/epics/${name}`] = content;
+                            
+                            // Extract epic number (e.g., 004 from epic-004-*)
+                            const epicNumMatch = name.match(/epic-(\d+)/i);
+                            if (epicNumMatch) {
+                                const num = parseInt(epicNumMatch[1]);
+                                if (!epicMap[num]) epicMap[num] = [];
+                                epicMap[num].push({ name, path: `docs/epics/${name}`, num });
+                                trackModified(item, modTime);
+                            }
+                        }
+                    }
+                    projectFiles.epics.sort((a, b) => {
+                        const numA = parseInt(a.name.match(/\d+/) || 0);
+                        const numB = parseInt(b.name.match(/\d+/) || 0);
+                        return numA - numB;
+                    });
+                } catch (e) {}
+                
+                // Scan stories - distinguish stories from substories
+                try {
+                    const storiesDir = await docsDir.getDirectoryHandle('stories');
+                    for await (const [name, handle] of storiesDir.entries()) {
+                        if (name.endsWith('.md')) {
+                            const fileData = await handle.getFile();
+                            const content = await fileData.text();
+                            const modTime = new Date(fileData.lastModified);
+                            const item = { name, path: `docs/stories/${name}`, modified: modTime, size: fileData.size, content };
+                            projectFiles.stories.push(item);
+                            fileCache[`docs/stories/${name}`] = content;
+                            
+                            // Determine if this is a substory or a story
+                            const isSubstory = name.match(/substory/i);
+                            const storyNumMatch = name.match(/(?:sub)?story-(\d+)/i);
+                            
+                            if (storyNumMatch) {
+                                const epicNum = parseInt(storyNumMatch[1]);
+                                if (!storyMap[epicNum]) storyMap[epicNum] = { stories: [], substories: [] };
+                                
+                                if (isSubstory) {
+                                    storyMap[epicNum].substories.push({ name, path: `docs/stories/${name}`, epicNum });
+                                } else {
+                                    storyMap[epicNum].stories.push({ name, path: `docs/stories/${name}`, epicNum });
+                                }
+                                trackModified(item, modTime);
+                            }
+                        }
+                    }
+                } catch (e) {}
+                
+                // Scan other .md files
+                await scanOtherFiles(docsDir);
+                
+                updateCounts();
+            } catch (error) {
+                console.error('Error scanning:', error);
+                updateCounts();
+            }
+        }
+        
+        function trackModified(file, modTime) {
+            if (!lastModifiedTime || modTime > lastModifiedTime) {
+                lastModifiedFile = file;
+                lastModifiedTime = modTime;
+            }
+        }
+        
+        async function readProjectMetadata(docsDir) {
+            try {
+                const warpFile = await docsDir.getFileHandle('..').then(d => d.getFileHandle('WARP.md')).catch(() => null);
+                if (!warpFile) return;
+                
+                const fileData = await warpFile.getFile();
+                const content = await fileData.text();
+                
+                const epicsMatch = content.match(/total_epics:\s*(\d+)/i) || content.match(/epics:\s*(\d+)/i);
+                const storiesMatch = content.match(/total_stories:\s*(\d+)/i) || content.match(/stories:\s*(\d+)/i);
+                
+                if (epicsMatch) projectMetadata.expectedEpics = parseInt(epicsMatch[1]);
+                if (storiesMatch) projectMetadata.expectedStories = parseInt(storiesMatch[1]);
+            } catch (e) {}
+        }
+        
+        async function scanOtherFiles(docsDir) {
+            otherFiles = [];
+            const trackedFiles = new Set([
+                'brainstorming-session.md', 'project-brief.md', 'prd.md', 
+                'market-research.md', 'front-end-spec.md', 'architecture.md', 'README.md'
+            ]);
+            
+            try {
+                for await (const [name, handle] of docsDir.entries()) {
+                    if (name.endsWith('.md') && !trackedFiles.has(name)) {
+                        try {
+                            const fileData = await handle.getFile();
+                            const content = await fileData.text();
+                            const modTime = new Date(fileData.lastModified);
+                            const item = { 
+                                name, 
+                                path: `docs/${name}`, 
+                                modified: modTime,
+                                timestamp: modTime.getTime(),
+                                size: fileData.size, 
+                                content 
+                            };
+                            otherFiles.push(item);
+                            fileCache[`docs/${name}`] = content;
+                            trackModified(item, modTime);
+                        } catch (e) {}
+                    }
+                }
+            } catch (e) {}
+        }
+        
+        function updateCounts() {
+            const epicCount = Object.keys(epicMap).length;
+            const storyCount = Object.keys(storyMap).length;
+            const othersCount = otherFiles.length;
+            
+            document.getElementById('count-workflow').textContent = epicCount + storyCount + analysisFiles.length;
+            document.getElementById('count-others').textContent = othersCount;
+        }
+        
+        async function renderSection(section) {
+            const contentPanel = document.getElementById('contentPanel');
+            const workflowPanel = document.getElementById('workflowTree');
+            const headerTitle = document.getElementById('headerTitle');
+            
+            switch(section) {
+                case 'workflow':
+                    headerTitle.textContent = '🔄 Workflow';
+                    renderWorkflowTree();
+                    contentPanel.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📂</div>Select an item from the workflow tree to view details</div>';
+                    break;
+                case 'overview':
+                    headerTitle.textContent = '📊 Overview';
+                    workflowPanel.innerHTML = '';
+                    contentPanel.innerHTML = renderOverviewPanel();
+                    break;
+                case 'prd':
+                    headerTitle.textContent = '📋 PRD';
+                    workflowPanel.innerHTML = '';
+                    if (projectFiles.prd) {
+                        contentPanel.innerHTML = `<div class="markdown-content">${marked.parse(projectFiles.prd.content)}</div>`;
+                        updatePreview(projectFiles.prd.path, projectFiles.prd.content);
+                        document.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+                    } else {
+                        contentPanel.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div>No PRD found</div>';
+                    }
+                    break;
+                case 'others':
+                    headerTitle.textContent = '📂 Others';
+                    renderOthersTree();
+                    contentPanel.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📄</div>Select a file from the list to view details</div>';
+                    break;
+            }
+        }
+        
+        function renderWorkflowTree() {
+            const treePanel = document.getElementById('workflowTree');
+            let html = '';
+            
+            const epicNumbers = Object.keys(epicMap).map(Number).sort((a, b) => a - b);
+            const maxEpic = projectMetadata.expectedEpics || (epicNumbers.length > 0 ? Math.max(...epicNumbers) : 0);
+            
+            if (maxEpic === 0 && epicNumbers.length === 0 && analysisFiles.length === 0) {
+                treePanel.innerHTML = '<div style="padding: 10px; color: #a0aec0; font-size: 0.85em;">No files found. Select a project first.</div>';
+                return;
+            }
+            
+            // Render epics with grouped variants and nested stories
+            for (let i = 1; i <= maxEpic; i++) {
+                const epicKey = i.toString().padStart(3, '0');
+                const epicVariants = epicMap[i] || [];
+                const hasEpic = epicVariants.length > 0;
+                
+                if (hasEpic) {
+                    // Epic parent node (collapsible)
+                    const epicId = `epic-${epicKey}`;
+                    html += `<div class="folder-item folder-epic" onclick="toggleEpicNode('${epicId}', event)">
+                        <span class="folder-icon expand-icon" id="${epicId}-icon">▼</span>
+                        <span class="folder-icon">📁</span>Epic ${epicKey} (${epicVariants.length})
+                        <span class="badge complete">✓</span>
+                    </div>`;
+                    
+                    // Epic children container (all variants + stories)
+                    html += `<div class="epic-children" id="${epicId}-children">`;
+                    
+                    // Render all epic file variants
+                    epicVariants.forEach((variant, idx) => {
+                        const isPrimary = idx === 0;
+                        html += `<div class="folder-item folder-epic-variant ${isPrimary ? 'primary' : ''}" onclick="selectFile('${variant.path}')">
+                            <span class="folder-icon">📄</span>${variant.name.replace(/\.md$/, '')}
+                        </div>`;
+                    });
+                    
+                    // Render stories and substories for this epic
+                    const storyData = storyMap[i];
+                    if (storyData) {
+                        const { stories = [], substories = [] } = storyData;
+                        
+                        if (stories.length > 0) {
+                            html += `<div class="folder-item folder-stories-header">
+                                <span class="folder-icon">📝</span>Stories (${stories.length})
+                            </div>`;
+                            
+                            stories.forEach(story => {
+                                html += `<div class="folder-item folder-story" onclick="selectFile('${story.path}')">
+                                    <span class="folder-icon">📝</span>${story.name.replace(/\.md$/, '')}
+                                </div>`;
+                            });
+                        }
+                        
+                        if (substories.length > 0) {
+                            html += `<div class="folder-item folder-substories-header">
+                                <span class="folder-icon">📋</span>Substories (${substories.length})
+                            </div>`;
+                            
+                            substories.forEach(substory => {
+                                html += `<div class="folder-item folder-substory" onclick="selectFile('${substory.path}')">
+                                    <span class="folder-icon">📋</span>${substory.name.replace(/\.md$/, '')}
+                                </div>`;
+                            });
+                        }
+                    }
+                    
+                    html += `</div>`; // Close epic-children
+                } else {
+                    html += `<div class="folder-item folder-epic missing">
+                        <span class="folder-icon">📁</span>Epic ${epicKey} <span class="badge missing">MISSING</span>
+                    </div>`;
+                }
+            }
+            
+            // Add Analysis section
+            if (analysisFiles.length > 0) {
+                html += `<div class="folder-item folder-analysis" onclick="toggleAnalysis(this)">
+                    <span class="folder-icon">📈</span>Analysis Files (${analysisFiles.length}) <span class="folder-icon" style="margin-left: auto;">▼</span>
+                </div>`;
+                html += `<div class="analysis-items">`;
+                analysisFiles.forEach(file => {
+                    html += `<div class="folder-item analysis-item" onclick="selectFile('${file.path}')">
+                        <span class="folder-icon">📄</span>${file.name.replace(/\.md$/, '')}
+                    </div>`;
+                });
+                html += `</div>`;
+            }
+            
+            treePanel.innerHTML = html || '<div style="padding: 10px; color: #a0aec0; font-size: 0.85em;">No workflow items found</div>';
+        }
+        
+        function toggleAnalysis(element) {
+            const next = element.nextElementSibling;
+            if (next && next.classList.contains('analysis-items')) {
+                next.style.display = next.style.display === 'none' ? 'block' : 'none';
+                element.classList.toggle('expanded');
+            }
+        }
+        
+        function toggleEpicNode(epicId, event) {
+            event.stopPropagation();
+            const childrenContainer = document.getElementById(`${epicId}-children`);
+            const icon = document.getElementById(`${epicId}-icon`);
+            
+            if (childrenContainer) {
+                const isCollapsed = childrenContainer.style.display === 'none';
+                childrenContainer.style.display = isCollapsed ? 'block' : 'none';
+                
+                if (icon) {
+                    if (isCollapsed) {
+                        icon.classList.remove('collapsed');
+                        icon.textContent = '▼';
+                    } else {
+                        icon.classList.add('collapsed');
+                        icon.textContent = '▶';
+                    }
+                }
+            }
+        }
+        
+        async function selectFile(filePath) {
+            currentFile = filePath;
+            const content = fileCache[filePath] || '';
+            const panel = document.getElementById('contentPanel');
+            
+            const html = marked.parse(content);
+            panel.innerHTML = `<div class="markdown-content">${html}</div>`;
+            document.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+            
+            updatePreview(filePath, content);
+        }
+        
+        function updatePreview(filePath, content) {
+            const panel = document.getElementById('previewPanel');
+            const lines = content.split('\n');
+            const words = content.split(/\s+/).length;
+            const readTime = Math.ceil(words / 200);
+            const headings = content.match(/^#+\s+/gm)?.length || 0;
+            const fileName = filePath.split('/').pop();
+            
+            let html = `
+                <div class="preview-section">
+                    <div class="preview-label">📄 File Info</div>
+                    <div class="preview-value" style="font-weight: 600; word-break: break-all;">${fileName}</div>
+                    <div class="preview-value" style="font-size: 0.8em; color: #a0aec0; margin-top: 4px; word-break: break-all;">${filePath}</div>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-label">Lines</div>
+                        <div class="stat-value">${lines.length}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Words</div>
+                        <div class="stat-value">${words}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Read Time</div>
+                        <div class="stat-value">${readTime}m</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Headings</div>
+                        <div class="stat-value">${headings}</div>
+                    </div>
+                </div>
+                
+                <div class="preview-section">
+                    <div class="preview-label">📊 Complexity</div>
+                    <div class="preview-value" style="margin-bottom: 8px;">${getComplexity(lines.length, words)}</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${Math.min((lines.length / 500) * 100, 100)}%"></div>
+                    </div>
+                </div>
+                
+                <div class="preview-section">
+                    <div class="preview-label">⚡ Actions</div>
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="copyToClipboard()">📋 Copy</button>
+                        <button class="action-btn" onclick="downloadFile()">⬇️ Download</button>
+                    </div>
+                </div>
+            `;
+            
+            panel.innerHTML = html;
+        }
+        
+        function getComplexity(lines, words) {
+            const complexity = (lines + words) / 2;
+            if (complexity < 200) return '🟢 Simple';
+            if (complexity < 500) return '🟡 Moderate';
+            if (complexity < 1000) return '🟠 Complex';
+            return '🔴 Very Complex';
+        }
+        
+        function renderOverviewPanel() {
+            const epicCount = Object.keys(epicMap).length;
+            const storyCount = Object.keys(storyMap).length;
+            const analysisCount = analysisFiles.length;
+            const othersCount = otherFiles.length;
+            
+            const epicProgress = projectMetadata.expectedEpics > 0 ? (epicCount / projectMetadata.expectedEpics * 100) : 0;
+            const storyProgress = projectMetadata.expectedStories > 0 ? (storyCount / projectMetadata.expectedStories * 100) : 0;
+            
+            return `
+                <div style="padding: 20px;">
+                    <h2 style="color: #667eea; margin-bottom: 20px;">📊 Project Overview</h2>
+                    
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px;">
+                        <div style="background: rgba(102, 126, 234, 0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 8px; padding: 20px; text-align: center;">
+                            <div style="font-size: 2.5em; font-weight: bold; color: #667eea; margin-bottom: 8px;">${epicCount}</div>
+                            <div style="color: #cbd5e1;">Epics</div>
+                            ${projectMetadata.expectedEpics > 0 ? `<div style="font-size: 0.8em; color: #a0aec0; margin-top: 6px;">Expected: ${projectMetadata.expectedEpics}</div>` : ''}
+                        </div>
+                        <div style="background: rgba(118, 75, 162, 0.1); border: 1px solid rgba(118, 75, 162, 0.3); border-radius: 8px; padding: 20px; text-align: center;">
+                            <div style="font-size: 2.5em; font-weight: bold; color: #764ba2; margin-bottom: 8px;">${storyCount}</div>
+                            <div style="color: #cbd5e1;">Stories</div>
+                            ${projectMetadata.expectedStories > 0 ? `<div style="font-size: 0.8em; color: #a0aec0; margin-top: 6px;">Expected: ${projectMetadata.expectedStories}</div>` : ''}
+                        </div>
+                    </div>
+                    
+                    ${projectMetadata.expectedEpics > 0 ? `
+                    <div style="background: rgba(102, 126, 234, 0.08); border: 1px solid rgba(102, 126, 234, 0.2); border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="color: #cbd5e1;">Epic Progress</span>
+                            <span style="color: #667eea; font-weight: 600;">${Math.round(epicProgress)}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${epicProgress}%"></div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    ${projectMetadata.expectedStories > 0 ? `
+                    <div style="background: rgba(118, 75, 162, 0.08); border: 1px solid rgba(118, 75, 162, 0.2); border-radius: 8px; padding: 15px; margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="color: #cbd5e1;">Story Progress</span>
+                            <span style="color: #764ba2; font-weight: 600;">${Math.round(storyProgress)}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${storyProgress}%"></div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                        <div style="background: rgba(255,255,255,0.05); border-radius: 6px; padding: 12px;">
+                            <div style="font-size: 0.8em; color: #a0aec0; margin-bottom: 4px;">Analysis Files</div>
+                            <div style="font-size: 1.5em; font-weight: bold; color: #667eea;">${analysisCount}</div>
+                        </div>
+                        <div style="background: rgba(255,255,255,0.05); border-radius: 6px; padding: 12px;">
+                            <div style="font-size: 0.8em; color: #a0aec0; margin-bottom: 4px;">Other Files</div>
+                            <div style="font-size: 1.5em; font-weight: bold; color: #764ba2;">${othersCount}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function copyToClipboard() {
+            const content = fileCache[currentFile];
+            if (content) {
+                navigator.clipboard.writeText(content);
+                showRefreshNotification('✅ Content copied to clipboard!', 2000);
+            }
+        }
+        
+        function downloadFile() {
+            const content = fileCache[currentFile];
+            if (content) {
+                const blob = new Blob([content], { type: 'text/markdown' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = currentFile.split('/').pop();
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+        }
+        
+        function renderOthersTree() {
+            const treePanel = document.getElementById('workflowTree');
+            let sorted = [...otherFiles];
+            
+            sorted.sort((a, b) => b.timestamp - a.timestamp);
+            
+            let html = '';
+            
+            if (sorted.length === 0) {
+                html += '<div style="padding: 10px; color: #a0aec0; font-size: 0.85em;">No other files found</div>';
+            } else {
+                sorted.forEach(file => {
+                    html += `<div class="folder-item analysis-item" onclick="selectFile('${file.path}')">
+                        <span class="folder-icon">📄</span>${file.name.replace(/\.md$/, '')} 
+                        <span class="badge complete">✓</span>
+                    </div>`;
+                });
+            }
+            
+            treePanel.innerHTML = html;
+        }
+        
+        function startAutoRefresh() {
+            if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            
+            autoRefreshInterval = setInterval(async () => {
+                await checkForChanges();
+            }, 3000); // Check every 3 seconds
+        }
+        
+        async function checkForChanges() {
+            if (!projectRoot) return;
+            
+            try {
+                const docsDir = await projectRoot.getDirectoryHandle('docs').catch(() => null);
+                if (!docsDir) return;
+                
+                const previousState = previousFileState;
+                const currentState = {};
+                let hasChanged = false;
+                
+                // Check all files
+                for (const [path, content] of Object.entries(fileCache)) {
+                    currentState[path] = content.length; // Use content length as simple hash
+                    if (!previousState[path] || previousState[path] !== currentState[path]) {
+                        hasChanged = true;
+                    }
+                }
+                
+                // Check for new files
+                for (const path of Object.keys(previousState)) {
+                    if (!currentState[path]) {
+                        hasChanged = true;
+                    }
+                }
+                
+                if (hasChanged) {
+                    previousFileState = currentState;
+                    await scanProjectDirectory();
+                    updateProjectDetails();
+                    showRefreshNotification('🔄 Dashboard refreshed - new files detected');
+                    
+                    // Re-render current view
+                    const activeBtn = document.querySelector('.nav-btn.active');
+                    if (activeBtn) {
+                        await renderSection(activeBtn.dataset.section);
+                    }
+                }
+            } catch (e) {
+                console.log('Auto-refresh check failed');
+            }
+        }
+        
+        function showRefreshNotification(message, duration = 3000) {
+            const notification = document.createElement('div');
+            notification.className = 'refresh-notification';
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, duration);
+        }
+        
+        // Auto-scan on load
+        window.addEventListener('load', async () => {
+            console.log('Dashboard v9 loaded - Ready for project selection');
         });
     </script>
 </body>

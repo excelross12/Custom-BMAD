@@ -19,7 +19,7 @@
 ✅ **Multi-Terminal Support** — Works with Claude, ChatGPT, Copilot, Warp, or ANY AI  
 ✅ **Auto-Activation via BMAD.md** — Presence of file = BMAD applies automatically  
 ✅ **9 Specialized Agents** — Each masters one role (Developer, SM, QA, Architect, etc.)  
-✅ **Real-Time Dashboard** — Auto-generated HTML tracking workflow progress  
+✅ **Enhanced Dashboard** — Smart project tracker with hierarchical workflow tree  
 ✅ **Document-Driven** — PRD, Architecture, Stories guide everything  
 ✅ **Sequential Development** — One story at a time = manageable complexity  
 ✅ **Quality-First** — >80% test coverage, zero linting errors, strict types  
@@ -69,7 +69,11 @@ Act as BMAD QA. Review this implementation.
 
 ### 5. Track Progress
 
-Open `bmad-dashboard.html` in Chrome/Edge to see real-time progress.
+Open `docs/bmad-dashboard.html` in Chrome/Edge for:
+- 🌲 **Hierarchical workflow tree** with epic grouping
+- 🔄 **Auto-refresh** (5-second polling)
+- 📍 **Project location tracking** with full path display
+- 📊 **Real-time statistics** and file previews
 
 ---
 
@@ -136,38 +140,60 @@ project-root/
 
 ---
 
-## Real-Time Dashboard
+## Enhanced Dashboard (v9)
 
-### Auto-Generated Features
+### Key Features
 
-✅ **Project Status**
-- Current phase (Discovery → Planning → Development → Testing)
-- Progress bar (0-100%)
-- Steps completed (X/10)
+✅ **Smart Project Loading**
+- Direct folder selection with File System Access API
+- Auto-detects project structure and metadata
+- Displays full project location path
 
-✅ **Workflow Tracking**
-- All 10 BMAD stages with status
-- File existence indicators
-- File counts and timestamps
-- Story acceptance criteria (AC x/y)
-- Dev Notes detection
+✅ **Enhanced Workflow Tree**
+- 🌲 **Hierarchical Structure**: Epic grouping with variants
+- 📁 **Collapsible Nodes**: Expand/collapse epic sections
+- 📝 **Story Nesting**: Stories and substories properly organized
+- 🎯 **Visual Hierarchy**: Clear indentation and color coding
+- 📊 **Counters**: Shows epic variants, stories, substories count
 
-✅ **Quick Actions**
-- Copy-paste agent activation prompts
-- Works with ANY AI terminal
-- No manual typing needed
+✅ **Auto-Refresh System**
+- Polls every 5 seconds for file changes
+- Smart detection (only rescans when needed)
+- Updates workflow tree and file cache automatically
+- Tracks last modified file with timestamp
 
-✅ **Real-Time Updates**
-- Auto-refreshes every 3 seconds
-- Detects file changes immediately
-- No backend required (100% client-side)
+✅ **Three-Panel Layout**
+- **Left Sidebar**: Navigation and project details
+- **Middle Panel**: Content display with markdown rendering
+- **Right Panel**: Workflow tree OR file preview
+
+✅ **Analysis Files Integration**
+- Dedicated section for planning documents
+- Includes: PRD, Architecture, Market Research, etc.
+- Collapsible tree organization
 
 ### Open Dashboard
 
-1. Open `bmad-dashboard.html` in **Chrome** or **Edge**
-2. Click "Select Project Directory"
-3. Choose your project root
-4. Watch real-time progress tracking begin
+1. Open `docs/bmad-dashboard.html` in **Chrome** or **Edge**
+2. Click **"Select Project Folder"**
+3. Choose your project root directory
+4. Explore enhanced workflow tree and live previews
+
+### Epic Grouping Example
+
+```
+▼ 📁 Epic 004 (3) ✓
+  ├─ 📄 epic-004-main (Primary)
+  ├─ 📄 epic-004-COMPLETE
+  ├─ 📄 epic-004-analysis
+  ├─ Stories (5)
+  │  ├─ 📝 story-004-dashboard-ui
+  │  ├─ 📝 story-004-data-viz
+  │  └─ ...
+  └─ Substories (2)
+     ├─ 📋 substory-004-charts
+     └─ 📋 substory-004-tables
+```
 
 ---
 
@@ -428,10 +454,11 @@ See **QUICK-REFERENCE.md** for:
 |---------|---------|-------|
 | Chrome 86+ | ✅ Full | Recommended |
 | Edge 86+ | ✅ Full | Recommended |
-| Firefox | ⚠️ Warning | API not yet available |
-| Safari | ⚠️ Warning | API not yet available |
+| Brave | ✅ Full | Chromium-based |
+| Firefox | ⚠️ Limited | File System API not supported |
+| Safari | ❌ Not Supported | File System API not available |
 
-*Dashboard uses File System Access API (Chromium-only for now)*
+*Dashboard requires File System Access API (Chromium browsers only)*
 
 ---
 
@@ -441,10 +468,11 @@ See **QUICK-REFERENCE.md** for:
 |----------|---------|
 | `BMAD.md` | Project config (auto-activation trigger) |
 | `global-bmad-rules.md` | Universal BMAD rules (install in AI) |
-| `BMAD-DASHBOARD-GUIDE.md` | Complete dashboard user guide |
-| `DASHBOARD-QUICK-START.md` | Quick reference card |
-| `IMPLEMENTATION-SUMMARY.md` | Technical architecture details |
-| `scripts/generate-bmad-dashboard.ps1` | Dashboard generator |
+| `docs/DASHBOARD-GUIDE.md` | Complete dashboard user guide |
+| `docs/BMAD-V9-ARCHITECTURE.md` | Dashboard technical architecture |
+| `docs/v9-enhanced-workflow-tree-changelog.md` | Latest enhancements changelog |
+| `QUICK-START.md` | Rapid onboarding guide |
+| `SETUP-GUIDE.md` | Detailed installation instructions |
 
 ---
 
