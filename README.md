@@ -1,309 +1,512 @@
-# BMAD Method - Universal AI-Driven Development Framework
-**Version 4.44.1 (Universal Edition)**
+# 🎯 CUSTOM-BMAD v4.45
 
-Transform your development workflow with AI-powered agents that work with **any** AI coding assistant.
+## Breakthrough Method of Agile AI-Driven Development
 
-## What is BMAD?
+**Multi-Terminal Edition** — Works with **ANY AI** (Claude, ChatGPT, Copilot, Warp, etc.)
 
-**BMAD Method** (Breakthrough Method of Agile AI-driven Development) is a comprehensive framework that turns you into a "Vibe CEO" - directing specialized AI agents through structured workflows from concept to deployed code.
+![CUSTOM-BMAD](https://img.shields.io/badge/CUSTOM--BMAD-v4.45-blue?style=flat-square&logo=code&logoColor=white)
+![License](https://img.shields.io/badge/License-BMAD%20Method%E2%84%A2-green?style=flat-square)
+![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen?style=flat-square)
+
+---
+
+## What is CUSTOM-BMAD?
+
+**CUSTOM-BMAD** is a complete AI-driven development framework that transforms you into a "Vibe CEO" directing specialized AI agents through structured workflows—from concept to deployed code.
 
 ### Key Features
 
-- **10 Specialized AI Agents** - Developer, Scrum Master, Architect, QA, and more
-- **Universal Compatibility** - Works with Cursor, Windsurf, Aider, Cline, GitHub Copilot, etc.
-- **Structured Workflows** - Proven patterns from idea to production
-- **Document-Driven** - PRDs, architecture docs, and user stories guide development
-- **Sequential Development** - One story at a time, clean handoffs
-- **Quality Gates** - Comprehensive testing and validation at every step
+✅ **Multi-Terminal Support** — Works with Claude, ChatGPT, Copilot, Warp, or ANY AI  
+✅ **Auto-Activation via BMAD.md** — Presence of file = BMAD applies automatically  
+✅ **9 Specialized Agents** — Each masters one role (Developer, SM, QA, Architect, etc.)  
+✅ **Real-Time Dashboard** — Auto-generated HTML tracking workflow progress  
+✅ **Document-Driven** — PRD, Architecture, Stories guide everything  
+✅ **Sequential Development** — One story at a time = manageable complexity  
+✅ **Quality-First** — >80% test coverage, zero linting errors, strict types  
+✅ **Zero Dependencies** — Pure markdown + JavaScript, works offline  
 
-## Getting Started from GitHub
+---
 
-### Step 1: Clone the Repository
+## Getting Started (60 seconds)
 
-```bash
-# Clone from GitHub
-git clone https://github.com/excelross12/Custom-BMAD.git
-
-# Navigate into the directory
-cd Custom-BMAD
-```
-
-### Step 2: Set Up in Your AI Environment
-
-Choose your AI coding environment:
-
-**Option A: Cursor IDE**
-```bash
-# Copy global rules to Cursor configuration
-cp docs/global-bmad-rules.md .cursorrules
-
-# Restart Cursor to load rules
-```
-
-**Option B: Windsurf**
-```bash
-# Add to Windsurf's AI configuration
-# Settings > AI > Custom Rules
-# Import: docs/global-bmad-rules.md
-```
-
-**Option C: Warp Terminal**
-```bash
-# Open Warp: Settings > AI > Rules
-# Add Global Rule: docs/global-bmad-rules.md
-# Name it: "BMAD Method"
-```
-
-**Option D: Other AI Tools (Cline, Aider, etc.)**
-- Add `docs/global-bmad-rules.md` to your AI context
-- Or include it in your project-specific configuration
-
-### Step 3: Open the Visual Dashboard
+### 1. Clone or Create Project
 
 ```bash
-# Open the beginner-friendly dashboard in your browser
-open docs/bmad-dashboard.html   # macOS
-start docs/bmad-dashboard.html  # Windows
+# Clone existing CUSTOM-BMAD project
+git clone <project-url>
+
+# OR create new project
+mkdir my-project
+cd my-project
 ```
 
-The dashboard shows:
-- Your current project phase
-- What step to do next (highlighted in blue)
-- All file locations
-- Agent activation commands
+### 2. Install Global Rules
 
-### Step 4: Start Your First Project
+- **Copy** content from `global-bmad-rules.md`
+- **Add** to your AI terminal:
+  - **Claude**: Add to knowledge base or custom instructions
+  - **ChatGPT**: Add to custom instructions
+  - **Copilot**: Add to IDE settings or project rules
+  - **Warp**: Settings > AI > Knowledge > Manage Rules
+  - **Any other AI**: Add to its knowledge/rules/instructions section
 
-In your AI assistant, type:
+### 3. Activate BMAD
+
+Simply ensure **BMAD.md** exists in project root. BMAD auto-activates when:
+- ✅ BMAD.md present
+- ✅ Global rules installed in your AI
+- ✅ AI detects project contains BMAD.md
+
+### 4. Start Using Agents
+
+Copy any prompt from dashboard or use natural language:
 
 ```
-Act as BMAD Analyst. Let's start a new project.
+Act as BMAD Developer. Implement story-001.
+Act as BMAD Scrum Master. Create next story.
+Act as BMAD QA. Review this implementation.
 ```
 
-The BMAD Analyst will:
-- Ask you questions about your project
-- Help you brainstorm features
-- Create your project-brief.md
+### 5. Track Progress
 
-### Step 5: Follow the Workflow
+Open `bmad-dashboard.html` in Chrome/Edge to see real-time progress.
 
-Follow the dashboard or use this sequence:
-
-```bash
-# 1. Analysis & Brainstorming
-"Act as BMAD Analyst"
-# Creates: docs/project-brief.md
-
-# 2. Product Requirements
-"Act as BMAD Product Manager. Create PRD from project brief."
-# Creates: docs/prd.md
-
-# 3. Architecture Design
-"Act as BMAD Architect. Create fullstack architecture."
-# Creates: docs/architecture.md
-
-# 4. Break into Epics
-"Act as BMAD Product Owner. Shard the PRD into epics."
-# Creates: docs/epics/epic-001-*.md
-
-# 5. Create First Story
-"Act as BMAD Scrum Master. Create story from epic-001."
-# Creates: docs/stories/story-001-*.md
-
-# 6. Implement Code
-"Act as BMAD Developer. Implement story-001."
-# Writes: src/ and tests/
-
-# 7. Quality Review
-"Act as BMAD QA. Review story-001."
-# Validates and suggests improvements
-```
-
-## The 10 BMAD Agents
-
-| Agent | Activation | Purpose |
-|-------|-----------|---------|
-| **Analyst** | "Act as BMAD Analyst" | Project discovery & brainstorming |
-| **Product Manager** | "Act as BMAD Product Manager" | Create PRDs & requirements |
-| **UX Expert** | "Act as BMAD UX Expert" | Design UI/UX specifications |
-| **Architect** | "Act as BMAD Architect" | Design system architecture |
-| **Product Owner** | "Act as BMAD Product Owner" | Document management & validation |
-| **Scrum Master** | "Act as BMAD Scrum Master" | Create user stories |
-| **Developer** | "Act as BMAD Developer" | Implement code with TDD |
-| **QA** | "Act as BMAD QA" | Testing & quality assurance |
-| **Master** | "Act as BMAD Master" | General guidance |
-| **Orchestrator** | "Act as BMAD Orchestrator" | Workflow coordination |
-
-## Complete Workflow
-
-### Phase 1: Planning
-```bash
-# 1. Brainstorm -> 2. PRD -> 3. UX Design -> 4. Architecture -> 5. Shard Documents
-```
-
-### Phase 2: Development
-```bash
-# 6. Create Story -> 7. Implement -> 8. QA Review -> 9. Repeat
-```
+---
 
 ## Project Structure
 
 ```
-your-project/
+project-root/
+├── 🎯 BMAD.md                      ← Auto-activates BMAD (presence = activation)
+├── 📊 bmad-dashboard.html          ← Auto-generated real-time tracker
+├── 📚 global-bmad-rules.md         ← Install in your AI terminal
 ├── docs/
-│   ├── global-bmad-rules.md   # Complete methodology
-│   ├── project-brief.md       # Generated by Analyst
-│   ├── prd.md                 # Generated by PM
-│   ├── architecture.md        # Generated by Architect
-│   ├── epics/                 # Generated by PO
-│   └── stories/               # Generated by SM
-├── reference/                  # BMAD reference files
-│   ├── agents/                # Agent definitions
-│   ├── tasks/                 # Task workflows
-│   ├── checklists/            # Quality checklists
-│   └── data/                  # Knowledge base
-├── src/                       # Your source code
-└── tests/                     # Your tests
+│   ├── prd.md                      ← Product Requirements Document
+│   ├── architecture.md             ← System Architecture
+│   ├── epics/
+│   │   ├── epic-001-*.md
+│   │   └── epic-002-*.md
+│   ├── stories/
+│   │   ├── .current-story          ← Tracks active story
+│   │   ├── story-001-*.md
+│   │   └── story-00X-*.md
+│   └── qa/
+├── src/                            ← Your source code
+├── tests/                          ← Your test suite
+└── README.md                       ← Your project readme
 ```
-
-## Compatible AI Tools
-
-BMAD works with:
-
-- **Cursor** - VS Code fork with AI
-- **Windsurf** - Codeium's AI IDE
-- **Aider** - AI pair programming
-- **Cline** - Claude in your editor
-- **GitHub Copilot** - AI code completion
-- **Any AI assistant** - Universal compatibility
-
-## Example: Start a New Project
-
-```bash
-Step 1: "Act as BMAD Analyst. Let's brainstorm a SaaS invoicing application."
-# Creates project-brief.md
-
-Step 2: "Act as BMAD Product Manager. Create PRD from project brief."
-# Creates prd.md with all features
-
-Step 3: "Act as BMAD Architect. Design fullstack architecture."
-# Creates architecture.md with tech stack
-
-Step 4: "Act as BMAD Scrum Master. Create first story from epic-001."
-# Creates story-001.md with detailed tasks
-
-Step 5: "Act as BMAD Developer. Implement story-001."
-# Writes code, tests, and documentation
-```
-
-## Documentation
-
-- **docs/global-bmad-rules.md** - Full methodology
-- **reference/agents/** - Complete agent definitions
-- **reference/tasks/** - Executable task workflows
-- **reference/checklists/** - Quality validation checklists
-- **reference/data/** - Knowledge base
-
-## Key Concepts
-
-### Dev Notes (Context Preservation)
-
-Every story ends with comprehensive Dev Notes that maintain context between stories:
-
-```markdown
-## Dev Notes
-
-### What Worked
-- JWT auth successful
-
-### Decisions Made
-- 7-day token expiry
-
-### For Next Story
-- Add rate limiting
-```
-
-### Sequential Development
-
-1. One story at a time
-2. Each story builds on previous Dev Notes
-3. Maintains context throughout project
-
-### Quality Gates
-
-Before every commit:
-```bash
-npm test              # All tests pass
-npm run lint          # Zero errors
-npm run type-check    # Types clean
-```
-
-## Getting Help
-
-- Read `QUICK-START.md` for 15-minute setup
-- Check `docs/global-bmad-rules.md` for complete methodology
-- Browse `reference/` for detailed agent definitions and workflows
-
-## Version
-
-**BMAD Method Version:** 4.44.1 (Universal Edition)  
-**Last Updated:** 2025-10-15  
-**Copyright 2025 BMad Code, LLC**
 
 ---
 
-## Customizing Your BMAD Setup
+## The 9 BMAD Agents
 
-### For Your Own Projects
+| Agent | Role | When To Use |
+|-------|------|-----------|
+| 🎯 **Developer** | Implementation | "Implement story", code changes needed |
+| 🏃 **Scrum Master** | Story Creation | "Create next story", task definition needed |
+| 🧪 **QA** | Quality Assurance | "Review this", quality concerns |
+| 📋 **Product Owner** | Document Management | "Shard document", alignment needed |
+| 🏗️ **Architect** | System Design | "Design the system", tech decisions needed |
+| 📈 **Analyst** | Research & Discovery | "Explore this", research needed |
+| 📊 **Project Manager** | Planning & Vision | "Plan features", requirements needed |
+| 🎨 **UX Expert** | User Experience | "Design interface", UX needed |
+| 🎓 **BMAD Master** | General Guidance | General BMAD questions |
 
-1. **Fork this repository** on GitHub
-2. **Clone your fork** to your local machine
-3. **Customize** docs/BMAD.md with your project details
-4. **Add project-specific rules** to docs/
-5. **Commit and push** your customizations
+---
 
-### For Contributing Improvements
+## Development Loop
 
-1. Fork this repository
-2. Create a feature branch: `git checkout -b feature/improvement`
-3. Make your changes
-4. Commit: `git commit -m "feat: description"`
-5. Push: `git push origin feature/improvement`
-6. Create a Pull Request
+```
+┌─────────────────────────────────────────────┐
+│ BMAD Development Loop (Repeating Pattern)   │
+└─────────────────────────────────────────────┘
+
+    1️⃣ Scrum Master creates story
+         ↓
+    2️⃣ You review & approve
+         ↓
+    3️⃣ Developer implements
+         ↓
+    4️⃣ QA reviews & validates
+         ↓
+    5️⃣ You verify completion
+         ↓
+    ✅ REPEAT for next story
+```
+
+---
+
+## Real-Time Dashboard
+
+### Auto-Generated Features
+
+✅ **Project Status**
+- Current phase (Discovery → Planning → Development → Testing)
+- Progress bar (0-100%)
+- Steps completed (X/10)
+
+✅ **Workflow Tracking**
+- All 10 BMAD stages with status
+- File existence indicators
+- File counts and timestamps
+- Story acceptance criteria (AC x/y)
+- Dev Notes detection
+
+✅ **Quick Actions**
+- Copy-paste agent activation prompts
+- Works with ANY AI terminal
+- No manual typing needed
+
+✅ **Real-Time Updates**
+- Auto-refreshes every 3 seconds
+- Detects file changes immediately
+- No backend required (100% client-side)
+
+### Open Dashboard
+
+1. Open `bmad-dashboard.html` in **Chrome** or **Edge**
+2. Click "Select Project Directory"
+3. Choose your project root
+4. Watch real-time progress tracking begin
+
+---
+
+## Multi-Terminal Integration
+
+### Using with Claude
+
+```
+1. Go to claude.ai
+2. Copy Quick Action from dashboard
+3. Paste: "Act as BMAD Developer. Implement story-001..."
+4. Claude responds with CUSTOM-BMAD context
+```
+
+### Using with ChatGPT
+
+```
+1. Go to chat.openai.com
+2. Add global-bmad-rules to Custom Instructions
+3. Copy prompt from dashboard
+4. Paste into ChatGPT
+5. ChatGPT uses BMAD methodology
+```
+
+### Using with Copilot
+
+```
+1. Open github.com/copilot
+2. Add global-bmad-rules to Copilot rules
+3. Reference story: "Based on docs/stories/story-001-*.md"
+4. Get BMAD-guided implementation
+```
+
+### Using with Warp Terminal
+
+```
+1. Warp auto-detects BMAD.md
+2. Agents auto-identify: "🎯 BMAD Agent: Developer | 🔧 CUSTOM-BMAD v4.45"
+3. Full BMAD methodology applies automatically
+```
+
+---
+
+## Key BMAD Rules
+
+When **BMAD.md is present**:
+
+✅ **Agent Identification (MANDATORY)**
+```
+🎯 **BMAD Agent: [Name]** | [Role] | 🔧 CUSTOM-BMAD v4.45
+```
+
+✅ **Dev Notes Required**
+Every story completion MUST include comprehensive Dev Notes documenting:
+- What worked
+- Decisions made
+- Lessons learned
+- Context for next story
+
+✅ **Quality Gates (ALL Must Pass)**
+- ✓ Tests pass (>80% coverage)
+- ✓ Zero linting errors
+- ✓ Type checking passes
+- ✓ Acceptance criteria met
+
+✅ **Sequential Development**
+- One story at a time
+- Stories completed in order
+- Each story builds on previous
+
+✅ **Document-Driven**
+- PRD guides product definition
+- Architecture guides technical decisions
+- Stories guide implementation
+
+---
+
+## File: BMAD.md
+
+**Purpose**: Auto-activation trigger for CUSTOM-BMAD methodology
+
+**When to create**: Every CUSTOM-BMAD project MUST have BMAD.md in root
+
+**Effect**: Presence of this file = BMAD methodology automatically applies
+
+**Distribution**: Include in git repos; when cloned, BMAD auto-applies if rules installed
+
+**Customization**: Edit project name, description, tech stack, phase
+
+### BMAD.md Template
+
+```markdown
+# 🎯 BMAD Project Configuration
+
+Project Name: [Your Project Name]
+Description: [Brief description]
+Tech Stack: [Technologies]
+Current Phase: [Planning / Development / Testing / Production]
+
+[Rest of BMAD.md configuration...]
+```
+
+---
+
+## File: global-bmad-rules.md
+
+**Purpose**: Universal rules for CUSTOM-BMAD agents
+
+**When to install**: Install ONCE in your AI terminal (not per-project)
+
+**Effect**: When BMAD.md detected, these rules apply automatically
+
+**Distribution**: Included in CUSTOM-BMAD; add to your AI's rules
+
+### Installation Instructions
+
+1. **Copy** content of `global-bmad-rules.md`
+2. **Add** to your AI terminal:
+   - Claude: Custom Instructions or Knowledge Base
+   - ChatGPT: Custom Instructions
+   - Copilot: Project Rules or Settings
+   - Warp: Settings > AI > Knowledge > Manage Rules
+3. **Save** changes
+4. **Test**: Create/clone project with BMAD.md; BMAD should auto-apply
+
+---
+
+## Quality Standards
+
+### Code Quality
+- ✅ Test coverage >80%
+- ✅ Zero linting errors
+- ✅ Strict type checking enabled
+- ✅ Inline docs for public APIs
+
+### Story Quality
+- ✅ Clear, testable acceptance criteria
+- ✅ Dev Notes mandatory
+- ✅ Architecture reference required
+- ✅ Sequential task execution
+
+### Validation Before Commit
+```bash
+# All must pass before git commit
+npm test                    # >80% coverage
+npm run lint               # Zero errors
+npm run type-check         # Type safety
+npm run build              # Builds successfully
+```
+
+---
+
+## Dashboard: Real-Time Tracking
+
+### What Gets Tracked
+
+| Stage | Files Tracked | Triggers Phase |
+|-------|--------------|----------------|
+| Discovery | brainstorming-session.md, project-brief.md | Discovery phase |
+| PRD | prd.md | Planning phase |
+| UI Spec | front-end-spec.md | Planning phase |
+| Architecture | architecture.md or docs/architecture/*.md | Planning phase |
+| Epics | docs/epics/*.md (count all) | Epics stage |
+| Stories | docs/stories/*.md (parse AC + Dev Notes) | Stories stage |
+| Implementation | src/ directory | Development phase |
+| Testing | tests/ directory | Testing phase |
+
+### Phase Detection
+
+```
+Discovery → Planning → Development → Testing
+```
+
+Phases auto-determined based on file presence:
+- **Discovery**: Brief or brainstorming exists
+- **Planning**: PRD or architecture ready
+- **Development**: Stories or code present
+- **Testing**: Tests present
+
+---
 
 ## Troubleshooting
 
-**Q: AI doesn't recognize BMAD agents**  
-A: Ensure global-bmad-rules.md is loaded in your AI context or .cursorrules file
-
-**Q: Not sure which step to do next**  
-A: Open docs/bmad-dashboard.html and look for the blue "DO THIS NEXT" indicator
-
-**Q: Where do I save files?**  
-A: The dashboard shows exact file paths for each step (e.g., docs/prd.md)
-
-**Q: How do I know if agents are working?**  
-A: Every agent response starts with: "🤖 **Agent: BMAD [Agent Name]** ([Role])"
-
-## Support & Resources
-
-- **Dashboard**: docs/bmad-dashboard.html - Visual workflow guide
-- **Quick Start**: QUICK-START.md - 15-minute setup guide
-- **Full Methodology**: docs/global-bmad-rules.md - Complete reference
-- **QA Report**: QA-REPORT.md - System verification details
-
-## License
-
-BMAD Method is a trademark of BMad Code, LLC  
-Copyright 2025 BMad Code, LLC
+| Issue | Solution |
+|-------|----------|
+| BMAD not activating | Ensure BMAD.md in root + rules installed in AI |
+| Dashboard not generating | Run: `New-BMADDashboard -ProjectPath .` |
+| Agent not identifying | Check BMAD.md present; verify rules installed |
+| Story metrics wrong | Check "## Acceptance Criteria" formatting |
+| Dev Notes not detected | Ensure "## Dev Notes" (exact spelling) |
 
 ---
 
-## Ready to Start?
+## Project Workflows
 
-1. Clone from GitHub: `git clone https://github.com/excelross12/Custom-BMAD.git`
-2. Set up in your AI tool (see Step 2 above)
-3. Open the dashboard: `docs/bmad-dashboard.html`
-4. Activate your first agent: `"Act as BMAD Analyst"`
+### Discovery → Development → Production
 
-**Happy Building with BMAD!**
+**Phase 1: Discovery & Planning** (Use: Analyst → PM → UX → Architect → PO)
+- Brainstorm & research
+- Define requirements (PRD)
+- Design UI/UX specification
+- Create architecture
+- Shard into epics
+
+**Phase 2: Development** (Use: SM → Dev → QA, repeat)
+- SM creates stories from epics
+- Dev implements with TDD
+- QA reviews & validates
+- Repeat until epic complete
+
+**Phase 3: Production** (Use: Architect → QA → PO)
+- Final validation
+- Deployment readiness
+- Production monitoring
+
+---
+
+## Installation & Setup
+
+### Option 1: Quick Start (New Project)
+
+```bash
+# Create directory
+mkdir my-project
+cd my-project
+
+# Run installer (if using PowerShell scripts)
+powershell -Command "& 'path\to\CUSTOM-BMAD\scripts\install-warp-bmad.ps1' -ProjectPath ."
+
+# OR manually:
+# 1. Copy BMAD.md template to project root
+# 2. Create docs/epics, docs/stories, src, tests directories
+# 3. Run: New-BMADDashboard -ProjectPath .
+```
+
+### Option 2: Existing Project
+
+```bash
+# 1. Add BMAD.md to project root
+cp BMAD-template.md your-project/BMAD.md
+
+# 2. Install global-bmad-rules.md in your AI
+
+# 3. Generate dashboard
+powershell -Command "& 'path\to\scripts\generate-bmad-dashboard.ps1' -ProjectPath ."
+
+# 4. BMAD auto-applies!
+```
+
+---
+
+## Browser Compatibility
+
+| Browser | Support | Notes |
+|---------|---------|-------|
+| Chrome 86+ | ✅ Full | Recommended |
+| Edge 86+ | ✅ Full | Recommended |
+| Firefox | ⚠️ Warning | API not yet available |
+| Safari | ⚠️ Warning | API not yet available |
+
+*Dashboard uses File System Access API (Chromium-only for now)*
+
+---
+
+## Documentation
+
+| Document | Purpose |
+|----------|---------|
+| `BMAD.md` | Project config (auto-activation trigger) |
+| `global-bmad-rules.md` | Universal BMAD rules (install in AI) |
+| `BMAD-DASHBOARD-GUIDE.md` | Complete dashboard user guide |
+| `DASHBOARD-QUICK-START.md` | Quick reference card |
+| `IMPLEMENTATION-SUMMARY.md` | Technical architecture details |
+| `scripts/generate-bmad-dashboard.ps1` | Dashboard generator |
+
+---
+
+## Support & Community
+
+### Getting Help
+
+1. Check **BMAD.md** for project-specific rules
+2. Review **global-bmad-rules.md** for agent definitions
+3. See **BMAD-DASHBOARD-GUIDE.md** for detailed documentation
+4. Check **DASHBOARD-QUICK-START.md** for quick answers
+
+### Contributing
+
+CUSTOM-BMAD is a framework for your projects. Contribute by:
+1. Using BMAD in your projects
+2. Sharing patterns and practices
+3. Enhancing agent capabilities
+4. Improving documentation
+
+---
+
+## Version History
+
+| Version | Date | Notes |
+|---------|------|-------|
+| **4.45.0** | Oct 16, 2025 | Multi-Terminal Edition Release |
+| 4.44.1 | Oct 8, 2025 | Warp Terminal Adaptation |
+| 4.0.0 | Sept 2025 | Initial BMAD Method Release |
+
+---
+
+## License
+
+**BMAD Method™** is a trademark of BMad Code, LLC
+
+CUSTOM-BMAD framework is provided as-is for use in AI-driven development projects.
+
+---
+
+## Quick Summary
+
+🎯 **CUSTOM-BMAD v4.45** is a complete AI development framework that:
+
+1. ✅ **Works with ANY AI** (Claude, ChatGPT, Copilot, Warp, etc.)
+2. ✅ **Auto-activates** when BMAD.md is present
+3. ✅ **Uses 9 specialized agents** for different roles
+4. ✅ **Tracks progress** with real-time dashboard
+5. ✅ **Enforces quality** standards throughout
+6. ✅ **Guides development** through documented workflows
+7. ✅ **Provides agents** that identify themselves clearly
+8. ✅ **Works offline** with no backend required
+
+---
+
+**Get started now:**
+
+1. Clone/create project with BMAD.md
+2. Install global-bmad-rules.md in your AI
+3. Use natural language to activate agents
+4. Track progress with auto-generated dashboard
+5. Build amazing things! 🚀
+
+---
+
+**CUSTOM-BMAD v4.45 — Breakthrough Method of Agile AI-Driven Development**
+
+🔧 Multi-Terminal Edition | Works with ANY AI | Auto-Activation via BMAD.md ✨
