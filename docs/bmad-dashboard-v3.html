@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMAD Dashboard v3 - Real File Detection</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f7fa;
+            color: #2d3748;
+            overflow: hidden;
+        }
+        .container { display: flex; height: 100vh; }
+        
+        /* SIDEBAR */
+        .sidebar {
+            width: 320px;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            z-index: 1000;
+        }
+        
+        .sidebar-header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .sidebar-logo {
+            font-size: 1.6em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .project-status {
+            font-size: 0.85em;
+            opacity: 0.9;
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+        
+        .project-status.detected {
+            background: rgba(72, 187, 120, 0.3);
+            color: #d5f4e6;
+        }
+        
+        .project-status.not-detected {
+            background: rgba(245, 101, 101, 0.3);
+            color: #fed7d7;
+        }
+        
+        .sidebar-nav {
+            list-style: none;
+        }
+        
+        .sidebar-nav li {
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-nav button {
+            width: 100%;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            padding: 10px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .sidebar-nav button:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateX(3px);
+        }
+        
+        .sidebar-nav button.active {
+            background: rgba(255,255,255,0.3);
+            border-left: 3px solid #ffd700;
+            padding-left: 9px;
+        }
+        
+        .sidebar-icon {
+            font-size: 1.1em;
+            min-width: 20px;
+        }
+        
+        .file-indicator {
+            font-size: 0.75em;
+            background: rgba(255,255,255,0.2);
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-left: auto;
+        }
+        
+        .file-indicator.exists {
+            background: rgba(72, 187, 120, 0.4);
+            color: #c6f6d5;
+        }
+        
+        .file-indicator.missing {
+            background: rgba(245, 101, 101, 0.4);
+            color: #fed7d7;
+        }
+        
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 320px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-bottom: 2px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .header-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .header-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .select-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .select-btn:hover {
+            background: #5568d3;
+        }
+        
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+        
+        .badge-active {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        
+        .badge-inactive {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid #667eea;
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .file-list {
+            background: #f7fafc;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .file-item {
+            padding: 10px;
+            background: white;
+            border-left: 3px solid #667eea;
+            margin-bottom: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .file-item:hover {
+            background: #ebf8ff;
+            transform: translateX(5px);
+        }
+        
+        .file-name {
+            font-weight: 600;
+            color: #2d3748;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .file-path {
+            font-size: 0.85em;
+            color: #718096;
+            margin-top: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .file-size {
+            font-size: 0.8em;
+            color: #a0aec0;
+            margin-top: 4px;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #a0aec0;
+        }
+        
+        .empty-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <span>🎯</span>
+                    <span>BMAD v3</span>
+                </div>
+                <div class="project-status" id="projectStatus">
+                    🔍 Detecting project...
+                </div>
+            </div>
+            
+            <ul class="sidebar-nav" id="sidebarNav">
+                <li><button class="nav-btn active" data-section="overview">
+                    <span class="sidebar-icon">📊</span>
+                    <span>Overview</span>
+                    <span class="file-indicator" id="indicator-overview">-</span>
+                </button></li>
+                
+                <li><button class="nav-btn" data-section="analysis">
+                    <span class="sidebar-icon">📈</span>
+                    <span>Analysis & Brainstorm</span>
+                    <span class="file-indicator" id="indicator-analysis">-</span>
+                </button></li>
+                
+                <li><button class="nav-btn" data-section="research">
+                    <span class="sidebar-icon">🔬</span>
+                    <span>Market Research</span>
+                    <span class="file-indicator" id="indicator-research">-</span>
+                </button></li>
+                
+                <li><button class="nav-btn" data-section="prd">
+                    <span class="sidebar-icon">📋</span>
+                    <span>Product Req (PRD)</span>
+                    <span class="file-indicator" id="indicator-prd">-</span>
+                </button></li>
+                
+                <li><button class="nav-btn" data-section="ui">
+                    <span class="sidebar-icon">🎨</span>
+                    <span>Design UI</span>
+                    <span class="file-indicator" id="indicator-ui">-</span>
+                </button></li>
+                
+                <li><button class="nav-btn" data-section="architecture">
+                    <span class="sidebar-icon">🏗️</span>
+                    <span>Architecture</span>
+                    <span class="file-indicator" id="indicator-architecture">-</span>
+                </button></li>
+                
+                <li><button class="nav-btn" data-section="epics">
+                    <span class="sidebar-icon">📦</span>
+                    <span>Epics</span>
+                    <span class="file-indicator" id="indicator-epics">-</span>
+                </button></li>
+                
+                <li><button class="nav-btn" data-section="stories">
+                    <span class="sidebar-icon">📝</span>
+                    <span>Stories</span>
+                    <span class="file-indicator" id="indicator-stories">-</span>
+                </button></li>
+                
+                <li><button class="nav-btn" data-section="implementation">
+                    <span class="sidebar-icon">💻</span>
+                    <span>Implementation</span>
+                    <span class="file-indicator" id="indicator-implementation">-</span>
+                </button></li>
+                
+                <li><button class="nav-btn" data-section="testing">
+                    <span class="sidebar-icon">🧪</span>
+                    <span>Testing & QA</span>
+                    <span class="file-indicator" id="indicator-testing">-</span>
+                </button></li>
+            </ul>
+        </div>
+        
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- HEADER -->
+            <div class="header">
+                <div>
+                    <div class="header-title" id="headerTitle">📊 Overview</div>
+                </div>
+                <div class="header-right">
+                    <span class="status-badge" id="projectBadge">Not Detected</span>
+                    <button class="select-btn" onclick="selectProjectDirectory()">
+                        <span>📁</span>
+                        <span>Select Project</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- CONTENT AREA -->
+            <div class="content-area">
+                <!-- OVERVIEW -->
+                <div id="overview-section" class="section">
+                    <div class="section-title">
+                        <span>📊 Project Overview</span>
+                    </div>
+                    <div id="overviewContent">
+                        <div class="empty-state">
+                            <div class="empty-icon">📁</div>
+                            <p>Select a project directory to begin</p>
+                            <p style="font-size: 0.9em; margin-top: 10px;">Click "Select Project" to choose a folder containing BMAD.md</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- ANALYSIS -->
+                <div id="analysis-section" class="section hidden">
+                    <div class="section-title">📈 Project Analysis & Brainstorming</div>
+                    <div id="analysisContent"></div>
+                </div>
+                
+                <!-- RESEARCH -->
+                <div id="research-section" class="section hidden">
+                    <div class="section-title">🔬 Market Research</div>
+                    <div id="researchContent"></div>
+                </div>
+                
+                <!-- PRD -->
+                <div id="prd-section" class="section hidden">
+                    <div class="section-title">📋 Product Requirements (PRD)</div>
+                    <div id="prdContent"></div>
+                </div>
+                
+                <!-- UI -->
+                <div id="ui-section" class="section hidden">
+                    <div class="section-title">🎨 Design User Interface</div>
+                    <div id="uiContent"></div>
+                </div>
+                
+                <!-- ARCHITECTURE -->
+                <div id="architecture-section" class="section hidden">
+                    <div class="section-title">🏗️ System Architecture</div>
+                    <div id="architectureContent"></div>
+                </div>
+                
+                <!-- EPICS -->
+                <div id="epics-section" class="section hidden">
+                    <div class="section-title">📦 Epics</div>
+                    <div id="epicsContent"></div>
+                </div>
+                
+                <!-- STORIES -->
+                <div id="stories-section" class="section hidden">
+                    <div class="section-title">📝 Stories</div>
+                    <div id="storiesContent"></div>
+                </div>
+                
+                <!-- IMPLEMENTATION -->
+                <div id="implementation-section" class="section hidden">
+                    <div class="section-title">💻 Implementation</div>
+                    <div id="implementationContent"></div>
+                </div>
+                
+                <!-- TESTING -->
+                <div id="testing-section" class="section hidden">
+                    <div class="section-title">🧪 Testing & QA</div>
+                    <div id="testingContent"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let projectRoot = null;
+        let projectFiles = {};
+        
+        // Initialize
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                const section = this.dataset.section;
+                showSection(section);
+                updateActiveNav(this);
+                await loadSectionContent(section);
+            });
+        });
+        
+        // SELECT PROJECT DIRECTORY
+        async function selectProjectDirectory() {
+            try {
+                projectRoot = await window.showDirectoryPicker();
+                await scanProjectDirectory();
+                updateProjectStatus();
+                await loadSectionContent('overview');
+            } catch (error) {
+                console.log('Directory selection cancelled or failed');
+            }
+        }
+        
+        // SCAN PROJECT DIRECTORY
+        async function scanProjectDirectory() {
+            if (!projectRoot) return;
+            
+            projectFiles = {
+                hasBMAD: false,
+                brainstorming: null,
+                brief: null,
+                prd: null,
+                research: null,
+                uiSpec: null,
+                architecture: null,
+                epics: [],
+                stories: [],
+                src: [],
+                tests: []
+            };
+            
+            try {
+                // Check for BMAD.md
+                try {
+                    const bmadFile = await projectRoot.getFileHandle('BMAD.md');
+                    projectFiles.hasBMAD = true;
+                } catch (e) {}
+                
+                // Check docs folder
+                try {
+                    const docsDir = await projectRoot.getDirectoryHandle('docs');
+                    
+                    // Check individual files
+                    const files = ['brainstorming-session.md', 'project-brief.md', 'prd.md', 'market-research.md', 'front-end-spec.md', 'architecture.md'];
+                    for (const file of files) {
+                        try {
+                            const handle = await docsDir.getFileHandle(file);
+                            const fileData = await handle.getFile();
+                            const content = await fileData.text();
+                            
+                            if (file === 'brainstorming-session.md') projectFiles.brainstorming = { handle, name: file, size: fileData.size };
+                            else if (file === 'project-brief.md') projectFiles.brief = { handle, name: file, size: fileData.size };
+                            else if (file === 'prd.md') projectFiles.prd = { handle, name: file, size: fileData.size };
+                            else if (file === 'market-research.md') projectFiles.research = { handle, name: file, size: fileData.size };
+                            else if (file === 'front-end-spec.md') projectFiles.uiSpec = { handle, name: file, size: fileData.size };
+                            else if (file === 'architecture.md') projectFiles.architecture = { handle, name: file, size: fileData.size };
+                        } catch (e) {}
+                    }
+                    
+                    // Scan epics folder
+                    try {
+                        const epicsDir = await docsDir.getDirectoryHandle('epics');
+                        for await (const [name, handle] of epicsDir.entries()) {
+                            if (name.endsWith('.md')) {
+                                const fileData = await handle.getFile();
+                                projectFiles.epics.push({ name, size: fileData.size });
+                            }
+                        }
+                    } catch (e) {}
+                    
+                    // Scan stories folder
+                    try {
+                        const storiesDir = await docsDir.getDirectoryHandle('stories');
+                        for await (const [name, handle] of storiesDir.entries()) {
+                            if (name.endsWith('.md')) {
+                                const fileData = await handle.getFile();
+                                projectFiles.stories.push({ name, size: fileData.size });
+                            }
+                        }
+                    } catch (e) {}
+                } catch (e) {}
+                
+                // Scan src folder
+                try {
+                    const srcDir = await projectRoot.getDirectoryHandle('src');
+                    for await (const [name, handle] of srcDir.entries()) {
+                        if (!name.startsWith('.')) {
+                            const fileData = await handle.getFile();
+                            projectFiles.src.push({ name, size: fileData.size });
+                        }
+                    }
+                } catch (e) {}
+                
+                // Scan tests folder
+                try {
+                    const testsDir = await projectRoot.getDirectoryHandle('tests');
+                    for await (const [name, handle] of testsDir.entries()) {
+                        if (!name.startsWith('.')) {
+                            const fileData = await handle.getFile();
+                            projectFiles.tests.push({ name, size: fileData.size });
+                        }
+                    }
+                } catch (e) {}
+                
+                updateFileIndicators();
+            } catch (error) {
+                console.error('Error scanning directory:', error);
+            }
+        }
+        
+        // UPDATE PROJECT STATUS
+        function updateProjectStatus() {
+            const statusEl = document.getElementById('projectStatus');
+            const badgeEl = document.getElementById('projectBadge');
+            
+            if (projectFiles.hasBMAD) {
+                statusEl.textContent = '✅ BMAD Project Detected!';
+                statusEl.className = 'project-status detected';
+                badgeEl.textContent = 'Active';
+                badgeEl.className = 'status-badge badge-active';
+            } else {
+                statusEl.textContent = '❌ No BMAD.md found';
+                statusEl.className = 'project-status not-detected';
+                badgeEl.textContent = 'Inactive';
+                badgeEl.className = 'status-badge badge-inactive';
+            }
+        }
+        
+        // UPDATE FILE INDICATORS
+        function updateFileIndicators() {
+            const indicators = {
+                'analysis': projectFiles.brainstorming || projectFiles.brief,
+                'research': projectFiles.research,
+                'prd': projectFiles.prd,
+                'ui': projectFiles.uiSpec,
+                'architecture': projectFiles.architecture,
+                'epics': projectFiles.epics.length > 0,
+                'stories': projectFiles.stories.length > 0,
+                'implementation': projectFiles.src.length > 0 || projectFiles.tests.length > 0,
+                'testing': projectFiles.stories.length > 0
+            };
+            
+            for (const [key, exists] of Object.entries(indicators)) {
+                const indicator = document.getElementById(`indicator-${key}`);
+                if (indicator) {
+                    if (exists) {
+                        indicator.textContent = '✓';
+                        indicator.className = 'file-indicator exists';
+                    } else {
+                        indicator.textContent = '○';
+                        indicator.className = 'file-indicator missing';
+                    }
+                }
+            }
+        }
+        
+        // LOAD SECTION CONTENT
+        async function loadSectionContent(section) {
+            if (!projectRoot) return;
+            
+            const contentMap = {
+                'overview': buildOverview,
+                'analysis': buildAnalysis,
+                'research': buildResearch,
+                'prd': buildPRD,
+                'ui': buildUI,
+                'architecture': buildArchitecture,
+                'epics': buildEpics,
+                'stories': buildStories,
+                'implementation': buildImplementation,
+                'testing': buildTesting
+            };
+            
+            if (contentMap[section]) {
+                const html = await contentMap[section]();
+                document.getElementById(section + '-section').innerHTML = html;
+            }
+        }
+        
+        // BUILD OVERVIEW
+        async function buildOverview() {
+            return `
+                <div class="section-title">📊 Project Overview</div>
+                <div class="file-list">
+                    <h3 style="margin-bottom: 15px;">📁 Project Status</h3>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                        <div style="background: #ebf8ff; padding: 15px; border-radius: 8px; border-left: 4px solid #4299e1;">
+                            <div style="font-size: 1.8em; font-weight: bold; color: #2d3748;">${projectFiles.epics.length}</div>
+                            <div style="color: #718096; font-size: 0.9em;">Epics Created</div>
+                        </div>
+                        <div style="background: #f0fff4; padding: 15px; border-radius: 8px; border-left: 4px solid #48bb78;">
+                            <div style="font-size: 1.8em; font-weight: bold; color: #2d3748;">${projectFiles.stories.length}</div>
+                            <div style="color: #718096; font-size: 0.9em;">Stories Created</div>
+                        </div>
+                        <div style="background: #fef5e7; padding: 15px; border-radius: 8px; border-left: 4px solid #f6ad55;">
+                            <div style="font-size: 1.8em; font-weight: bold; color: #2d3748;">${projectFiles.src.length}</div>
+                            <div style="color: #718096; font-size: 0.9em;">Source Files</div>
+                        </div>
+                        <div style="background: #faf5ff; padding: 15px; border-radius: 8px; border-left: 4px solid #b083f0;">
+                            <div style="font-size: 1.8em; font-weight: bold; color: #2d3748;">${projectFiles.tests.length}</div>
+                            <div style="color: #718096; font-size: 0.9em;">Test Files</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // BUILD ANALYSIS
+        async function buildAnalysis() {
+            let html = '<div class="section-title">📈 Project Analysis & Brainstorming</div><div class="file-list">';
+            
+            if (projectFiles.brainstorming) {
+                html += `<div class="file-item">
+                    <div class="file-name">📄 ${projectFiles.brainstorming.name}</div>
+                    <div class="file-path">docs/${projectFiles.brainstorming.name}</div>
+                    <div class="file-size">${(projectFiles.brainstorming.size / 1024).toFixed(2)} KB</div>
+                </div>`;
+            }
+            
+            if (projectFiles.brief) {
+                html += `<div class="file-item">
+                    <div class="file-name">📄 ${projectFiles.brief.name}</div>
+                    <div class="file-path">docs/${projectFiles.brief.name}</div>
+                    <div class="file-size">${(projectFiles.brief.size / 1024).toFixed(2)} KB</div>
+                </div>`;
+            }
+            
+            if (!projectFiles.brainstorming && !projectFiles.brief) {
+                html += '<div class="empty-state"><p>No files found</p></div>';
+            }
+            
+            html += '</div>';
+            return html;
+        }
+        
+        // BUILD RESEARCH
+        async function buildResearch() {
+            let html = '<div class="section-title">🔬 Market Research</div><div class="file-list">';
+            
+            if (projectFiles.research) {
+                html += `<div class="file-item">
+                    <div class="file-name">📄 ${projectFiles.research.name}</div>
+                    <div class="file-path">docs/${projectFiles.research.name}</div>
+                    <div class="file-size">${(projectFiles.research.size / 1024).toFixed(2)} KB</div>
+                </div>`;
+            } else {
+                html += '<div class="empty-state"><p>No market research file found</p></div>';
+            }
+            
+            html += '</div>';
+            return html;
+        }
+        
+        // BUILD PRD
+        async function buildPRD() {
+            let html = '<div class="section-title">📋 Product Requirements</div><div class="file-list">';
+            
+            if (projectFiles.prd) {
+                html += `<div class="file-item">
+                    <div class="file-name">📄 ${projectFiles.prd.name}</div>
+                    <div class="file-path">docs/${projectFiles.prd.name}</div>
+                    <div class="file-size">${(projectFiles.prd.size / 1024).toFixed(2)} KB</div>
+                </div>`;
+            } else {
+                html += '<div class="empty-state"><p>No PRD file found</p></div>';
+            }
+            
+            html += '</div>';
+            return html;
+        }
+        
+        // BUILD UI
+        async function buildUI() {
+            let html = '<div class="section-title">🎨 Design User Interface</div><div class="file-list">';
+            
+            if (projectFiles.uiSpec) {
+                html += `<div class="file-item">
+                    <div class="file-name">📄 ${projectFiles.uiSpec.name}</div>
+                    <div class="file-path">docs/${projectFiles.uiSpec.name}</div>
+                    <div class="file-size">${(projectFiles.uiSpec.size / 1024).toFixed(2)} KB</div>
+                </div>`;
+            } else {
+                html += '<div class="empty-state"><p>No UI specification file found</p></div>';
+            }
+            
+            html += '</div>';
+            return html;
+        }
+        
+        // BUILD ARCHITECTURE
+        async function buildArchitecture() {
+            let html = '<div class="section-title">🏗️ System Architecture</div><div class="file-list">';
+            
+            if (projectFiles.architecture) {
+                html += `<div class="file-item">
+                    <div class="file-name">📄 ${projectFiles.architecture.name}</div>
+                    <div class="file-path">docs/${projectFiles.architecture.name}</div>
+                    <div class="file-size">${(projectFiles.architecture.size / 1024).toFixed(2)} KB</div>
+                </div>`;
+            } else {
+                html += '<div class="empty-state"><p>No architecture file found</p></div>';
+            }
+            
+            html += '</div>';
+            return html;
+        }
+        
+        // BUILD EPICS
+        async function buildEpics() {
+            let html = '<div class="section-title">📦 Epics</div><div class="file-list">';
+            
+            if (projectFiles.epics.length > 0) {
+                projectFiles.epics.forEach(epic => {
+                    html += `<div class="file-item">
+                        <div class="file-name">📦 ${epic.name}</div>
+                        <div class="file-path">docs/epics/${epic.name}</div>
+                        <div class="file-size">${(epic.size / 1024).toFixed(2)} KB</div>
+                    </div>`;
+                });
+            } else {
+                html += '<div class="empty-state"><p>No epics found</p></div>';
+            }
+            
+            html += '</div>';
+            return html;
+        }
+        
+        // BUILD STORIES
+        async function buildStories() {
+            let html = '<div class="section-title">📝 Stories</div><div class="file-list">';
+            
+            if (projectFiles.stories.length > 0) {
+                projectFiles.stories.forEach(story => {
+                    const hasDevNotes = story.name.includes('story');
+                    html += `<div class="file-item">
+                        <div class="file-name">📝 ${story.name}</div>
+                        <div class="file-path">docs/stories/${story.name}</div>
+                        <div class="file-size">${(story.size / 1024).toFixed(2)} KB</div>
+                    </div>`;
+                });
+            } else {
+                html += '<div class="empty-state"><p>No stories found</p></div>';
+            }
+            
+            html += '</div>';
+            return html;
+        }
+        
+        // BUILD IMPLEMENTATION
+        async function buildImplementation() {
+            let html = '<div class="section-title">💻 Implementation</div><div class="file-list">';
+            html += '<h4 style="margin-bottom: 10px;">📂 Source Code (src/)</h4>';
+            
+            if (projectFiles.src.length > 0) {
+                projectFiles.src.forEach(file => {
+                    html += `<div class="file-item">
+                        <div class="file-name">💾 ${file.name}</div>
+                        <div class="file-path">src/${file.name}</div>
+                        <div class="file-size">${(file.size / 1024).toFixed(2)} KB</div>
+                    </div>`;
+                });
+            } else {
+                html += '<p style="color: #a0aec0; font-size: 0.9em;">No source files</p>';
+            }
+            
+            html += '<h4 style="margin-top: 20px; margin-bottom: 10px;">🧪 Tests (tests/)</h4>';
+            
+            if (projectFiles.tests.length > 0) {
+                projectFiles.tests.forEach(file => {
+                    html += `<div class="file-item">
+                        <div class="file-name">🧪 ${file.name}</div>
+                        <div class="file-path">tests/${file.name}</div>
+                        <div class="file-size">${(file.size / 1024).toFixed(2)} KB</div>
+                    </div>`;
+                });
+            } else {
+                html += '<p style="color: #a0aec0; font-size: 0.9em;">No test files</p>';
+            }
+            
+            html += '</div>';
+            return html;
+        }
+        
+        // BUILD TESTING
+        async function buildTesting() {
+            let html = '<div class="section-title">🧪 Testing & QA</div><div class="file-list">';
+            html += '<h4>Stories for QA Review:</h4>';
+            
+            if (projectFiles.stories.length > 0) {
+                html += `<p style="color: #718096; margin-bottom: 15px;">${projectFiles.stories.length} stories to review</p>`;
+                projectFiles.stories.forEach(story => {
+                    html += `<div class="file-item">
+                        <div class="file-name">📝 ${story.name}</div>
+                        <div class="file-path">docs/stories/${story.name}</div>
+                        <div style="color: #a0aec0; font-size: 0.85em; margin-top: 4px;">Ready for QA review</div>
+                    </div>`;
+                });
+            } else {
+                html += '<p style="color: #a0aec0;">No stories available for testing</p>';
+            }
+            
+            html += '</div>';
+            return html;
+        }
+        
+        // SHOW SECTION
+        function showSection(section) {
+            document.querySelectorAll('[id$="-section"]').forEach(el => el.classList.add('hidden'));
+            const targetSection = document.getElementById(section + '-section');
+            if (targetSection) targetSection.classList.remove('hidden');
+        }
+        
+        // UPDATE ACTIVE NAV
+        function updateActiveNav(btn) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+    </script>
+</body>
+</html>
