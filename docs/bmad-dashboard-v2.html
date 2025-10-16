@@ -617,6 +617,31 @@
                             <input type="number" id="refreshInterval" value="3" min="1" max="60"
                                    style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #e2e8f0; border-radius: 6px;">
                         </label>
+                        
+                        <div style="background: #f0fff4; padding: 15px; border-radius: 8px; margin-bottom: 15px; border-left: 4px solid #48bb78;">
+                            <strong style="color: #22543d;">📊 Manual Progress Update</strong>
+                            <p style="font-size: 0.9em; color: #22543d; margin-top: 8px; margin-bottom: 10px;">Update metrics manually - progress only changes when you explicitly update it</p>
+                            
+                            <label style="display: block; margin-bottom: 10px;">
+                                <strong>Progress %:</strong><br>
+                                <input type="number" id="progressInput" value="10" min="0" max="100" 
+                                       style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #48bb78; border-radius: 4px;">
+                            </label>
+                            <label style="display: block; margin-bottom: 10px;">
+                                <strong>Stories Count:</strong><br>
+                                <input type="number" id="storiesInput" value="0" min="0" max="100" 
+                                       style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #48bb78; border-radius: 4px;">
+                            </label>
+                            <label style="display: block; margin-bottom: 15px;">
+                                <strong>Epics Count:</strong><br>
+                                <input type="number" id="epicsInput" value="0" min="0" max="50" 
+                                       style="width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #48bb78; border-radius: 4px;">
+                            </label>
+                            <button onclick="updateMetrics()" style="background: #48bb78; color: white; padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-weight: 600;">
+                                ✓ Update Metrics
+                            </button>
+                        </div>
+                        
                         <button onclick="saveSettings()" style="background: #667eea; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
                             Save Settings
                         </button>
@@ -735,20 +760,28 @@
             });
         }
         
-        // DASHBOARD UPDATE
-        function updateDashboard() {
-            const progress = Math.random() * 100 | 0; // Mock data
-            const stories = Math.floor(Math.random() * 10) + 1;
-            const epics = Math.floor(Math.random() * 5) + 1;
-            
-            document.getElementById('metricProgress').textContent = progress + '%';
-            document.getElementById('progressFill').style.width = progress + '%';
-            document.getElementById('progressPercent').textContent = progress + '%';
-            document.getElementById('progressLabel').textContent = progress + '%';
-            document.getElementById('metricStories').textContent = stories;
-            document.getElementById('storiesLabel').textContent = stories;
-            document.getElementById('metricEpics').textContent = epics;
-            document.getElementById('lastUpdateLabel').textContent = new Date().toLocaleTimeString();
+        // DASHBOARD UPDATE - Read from actual project files
+        async function updateDashboard() {
+            try {
+                // Try to read actual project data from localStorage/sessionStorage
+                let progress = localStorage.getItem('bmadProgress') || 10;
+                let stories = localStorage.getItem('bmadStories') || 0;
+                let epics = localStorage.getItem('bmadEpics') || 0;
+                
+                // If values are still defaults, try to detect from file system
+                // For now, use stored values and don't auto-increment
+                
+                document.getElementById('metricProgress').textContent = progress + '%';
+                document.getElementById('progressFill').style.width = progress + '%';
+                document.getElementById('progressPercent').textContent = progress + '%';
+                document.getElementById('progressLabel').textContent = progress + '%';
+                document.getElementById('metricStories').textContent = stories;
+                document.getElementById('storiesLabel').textContent = stories;
+                document.getElementById('metricEpics').textContent = epics;
+                document.getElementById('lastUpdateLabel').textContent = new Date().toLocaleTimeString();
+            } catch (error) {
+                console.log('Dashboard update error:', error);
+            }
         }
         
         // REFRESH
@@ -777,6 +810,34 @@
             if (savedInterval) {
                 document.getElementById('refreshInterval').value = savedInterval;
             }
+            
+            // Load metrics values
+            const savedProgress = localStorage.getItem('bmadProgress');
+            if (savedProgress) {
+                document.getElementById('progressInput').value = savedProgress;
+            }
+            const savedStories = localStorage.getItem('bmadStories');
+            if (savedStories) {
+                document.getElementById('storiesInput').value = savedStories;
+            }
+            const savedEpics = localStorage.getItem('bmadEpics');
+            if (savedEpics) {
+                document.getElementById('epicsInput').value = savedEpics;
+            }
+        }
+        
+        // UPDATE METRICS MANUALLY
+        function updateMetrics() {
+            const progress = document.getElementById('progressInput').value;
+            const stories = document.getElementById('storiesInput').value;
+            const epics = document.getElementById('epicsInput').value;
+            
+            localStorage.setItem('bmadProgress', progress);
+            localStorage.setItem('bmadStories', stories);
+            localStorage.setItem('bmadEpics', epics);
+            
+            updateDashboard();
+            alert('✓ Metrics updated!\n\nProgress: ' + progress + '%\nStories: ' + stories + '\nEpics: ' + epics);
         }
         
         function saveSettings() {
