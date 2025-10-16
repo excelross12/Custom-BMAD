@@ -420,6 +420,45 @@
             border-color: #667eea;
         }
         
+        .sort-controls {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            padding: 8px;
+            background: rgba(102, 126, 234, 0.08);
+            border-radius: 6px;
+            align-items: center;
+        }
+        
+        .sort-label {
+            font-size: 0.8em;
+            color: #a0aec0;
+            font-weight: 600;
+        }
+        
+        .sort-btn {
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            color: #667eea;
+            padding: 4px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75em;
+            transition: all 0.2s ease;
+            font-weight: 600;
+        }
+        
+        .sort-btn:hover {
+            background: rgba(102, 126, 234, 0.4);
+            border-color: #667eea;
+        }
+        
+        .sort-btn.active {
+            background: rgba(102, 126, 234, 0.5);
+            border-color: #667eea;
+            color: white;
+        }
+        
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
@@ -463,6 +502,9 @@
                 <li><button class="nav-btn" data-section="prd">
                     <span class="sidebar-icon">📋</span><span>PRD</span>
                 </button></li>
+                <li><button class="nav-btn" data-section="others">
+                    <span class="sidebar-icon">📂</span><span>Others</span><span class="file-count" id="count-others">0</span>
+                </button></li>
             </ul>
         </div>
         
@@ -500,6 +542,8 @@
         let fileCache = {};
         let epicMap = {};
         let storyMap = {};
+        let otherFiles = [];
+        let sortMode = 'updated'; // 'updated' or 'name'
         
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', async function() {
@@ -586,34 +630,74 @@
                     }
                 } catch (e) {}
                 
+                // Scan for other .md files
+                scanOtherFiles(docsDir);
+                
                 updateCounts();
             } catch (error) {
                 console.error('Error scanning:', error);
             }
         }
         
+        async function scanOtherFiles(docsDir) {
+            otherFiles = [];
+            const trackedFiles = new Set([
+                'brainstorming-session.md', 'project-brief.md', 'prd.md', 
+                'market-research.md', 'front-end-spec.md', 'architecture.md'
+            ]);
+            
+            try {
+                for await (const [name, handle] of docsDir.entries()) {
+                    if (name.endsWith('.md') && !trackedFiles.has(name) && name !== 'README.md') {
+                        const fileData = await handle.getFile();
+                        const content = await fileData.text();
+                        const modTime = new Date(fileData.lastModified);
+                        otherFiles.push({ 
+                            name, 
+                            path: `docs/${name}`, 
+                            modified: modTime.toLocaleString(),
+                            timestamp: modTime.getTime(),
+                            size: fileData.size, 
+                            content 
+                        });
+                        fileCache[`docs/${name}`] = content;
+                    }
+                }
+            } catch (e) {}
+        }
+        
         function updateCounts() {
             document.getElementById('count-workflow').textContent = Object.keys(epicMap).length + Object.keys(storyMap).length;
+            document.getElementById('count-others').textContent = otherFiles.length;
         }
         
         async function renderSection(section) {
             const contentPanel = document.getElementById('contentPanel');
+            const workflowPanel = document.getElementById('workflowTree');
             
             switch(section) {
                 case 'workflow':
                     renderWorkflowTree();
+                    workflowPanel.innerHTML = '';
                     contentPanel.innerHTML = '<div style="padding: 20px; text-align: center; color: #a0aec0;">Select an item from the workflow tree to view details</div>';
                     break;
                 case 'overview':
+                    workflowPanel.innerHTML = '';
                     contentPanel.innerHTML = renderOverviewPanel();
                     break;
                 case 'analysis':
+                    workflowPanel.innerHTML = '';
                     contentPanel.innerHTML = renderAnalysisPanel();
                     break;
                 case 'prd':
+                    workflowPanel.innerHTML = '';
                     if (projectFiles.prd) {
                         contentPanel.innerHTML = `<div class="markdown-content">${marked.parse(projectFiles.prd.content)}</div>`;
                     }
+                    break;
+                case 'others':
+                    renderOthersTree();
+                    contentPanel.innerHTML = '<div style="padding: 20px; text-align: center; color: #a0aec0;">Select a file from the list to view details</div>';
                     break;
             }
         }
@@ -770,6 +854,39 @@
                 a.download = currentFile.split('/').pop();
                 a.click();
             }
+        }
+        
+        function renderOthersTree() {
+            const treePanel = document.getElementById('workflowTree');
+            let sorted = [...otherFiles];
+            
+            if (sortMode === 'updated') {
+                sorted.sort((a, b) => b.timestamp - a.timestamp);
+            } else {
+                sorted.sort((a, b) => a.name.localeCompare(b.name));
+            }
+            
+            let html = `
+                <div class="sort-controls">
+                    <span class="sort-label">Sort:</span>
+                    <button class="sort-btn ${sortMode === 'updated' ? 'active' : ''}" onclick="setSortMode('updated')">🕐 Updated</button>
+                    <button class="sort-btn ${sortMode === 'name' ? 'active' : ''}" onclick="setSortMode('name')">A-Z Name</button>
+                </div>
+            `;
+            
+            sorted.forEach(file => {
+                html += `<div class="folder-item folder-story" onclick="selectFile('${file.path}')">
+                    <span class="folder-icon">📄</span>${file.name.replace(/\.md$/, '')} 
+                    <span class="badge complete">✓</span>
+                </div>`;
+            });
+            
+            treePanel.innerHTML = html || '<div style="padding: 10px; color: #a0aec0; font-size: 0.85em;">No other files found</div>';
+        }
+        
+        function setSortMode(mode) {
+            sortMode = mode;
+            renderOthersTree();
         }
     </script>
 </body>
