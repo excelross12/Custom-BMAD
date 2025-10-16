@@ -611,12 +611,12 @@
                 <div class="details-title">📊 PROJECT DETAILS</div>
                 
                 <div class="detail-item">
-                    <div class="detail-label">📁 Directory</div>
+                    <div class="detail-label">📁 Project Name</div>
                     <div class="detail-value" id="detail-directory">-</div>
                 </div>
                 
                 <div class="detail-item">
-                    <div class="detail-label">📍 Location</div>
+                    <div class="detail-label">📍 Full Path</div>
                     <div class="detail-value" id="detail-location">-</div>
                 </div>
                 
@@ -687,16 +687,30 @@
             });
         });
         
+        let projectFullPath = null; // Add this to track full path
+        
         async function selectProjectDirectory() {
             try {
                 projectRoot = await window.showDirectoryPicker();
                 projectPath = projectRoot.name || 'Unknown';
+                // Get full path from the directory picker
+                projectFullPath = await getDirectoryPath(projectRoot);
                 await scanProjectDirectory();
                 updateProjectDisplay();
                 startAutoRefresh();
                 await renderSection('workflow');
             } catch (error) {
                 console.log('Directory selection cancelled');
+            }
+        }
+        
+        async function getDirectoryPath(dirHandle) {
+            try {
+                const path = await dirHandle.resolve();
+                return '/' + path.join('/');
+            } catch (e) {
+                // Fallback: Use relative path indication
+                return dirHandle.name;
             }
         }
         
@@ -717,7 +731,7 @@
         
         function updateProjectDetails() {
             document.getElementById('detail-directory').textContent = projectPath;
-            document.getElementById('detail-location').textContent = projectRoot?.name || 'Unknown';
+            document.getElementById('detail-location').textContent = projectFullPath || projectRoot?.name || 'Unknown';
             
             if (lastModifiedFile) {
                 document.getElementById('detail-last-file').textContent = lastModifiedFile.name;
