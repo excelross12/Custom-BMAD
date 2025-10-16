@@ -387,35 +387,38 @@ Phases auto-determined based on file presence:
 
 ## Installation & Setup
 
-### Option 1: Quick Start (New Project)
+### ⚡ Quick Start (2 minutes)
 
 ```bash
-# Create directory
-mkdir my-project
-cd my-project
+# 1. Clone CUSTOM-BMAD
+git clone https://github.com/excelross12/Custom-BMAD.git
+cd Custom-BMAD
 
-# Run installer (if using PowerShell scripts)
-powershell -Command "& 'path\to\CUSTOM-BMAD\scripts\install-warp-bmad.ps1' -ProjectPath ."
+# 2. Install rules in your AI (one-time)
+#    Copy global-bmad-rules.md content to:
+#    - Claude: Custom Instructions
+#    - ChatGPT: Custom Instructions  
+#    - Copilot: Knowledge Base
+#    - Warp: Settings > AI > Knowledge > Manage Rules
 
-# OR manually:
-# 1. Copy BMAD.md template to project root
-# 2. Create docs/epics, docs/stories, src, tests directories
-# 3. Run: New-BMADDashboard -ProjectPath .
+# 3. You're ready! Start with:
+#    Act as BMAD Analyst. Let's brainstorm...
 ```
 
-### Option 2: Existing Project
+### 📚 Detailed Setup
 
-```bash
-# 1. Add BMAD.md to project root
-cp BMAD-template.md your-project/BMAD.md
+See **SETUP-GUIDE.md** for:
+- Step-by-step installation for each AI
+- Creating new projects
+- Complete discovery-to-development workflow
 
-# 2. Install global-bmad-rules.md in your AI
+### 🚀 Quick Reference
 
-# 3. Generate dashboard
-powershell -Command "& 'path\to\scripts\generate-bmad-dashboard.ps1' -ProjectPath ."
-
-# 4. BMAD auto-applies!
-```
+See **QUICK-REFERENCE.md** for:
+- All agent commands
+- File locations
+- Development loop
+- Troubleshooting
 
 ---
 
