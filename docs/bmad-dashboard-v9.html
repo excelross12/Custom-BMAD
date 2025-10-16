@@ -666,6 +666,7 @@
     <script>
         let projectRoot = null;
         let projectPath = null;
+        let projectFullPath = null;
         let projectFiles = {};
         let currentFile = null;
         let fileCache = {};
@@ -693,8 +694,9 @@
             try {
                 projectRoot = await window.showDirectoryPicker();
                 projectPath = projectRoot.name || 'Unknown';
-                // Get full path from the directory picker
-                projectFullPath = await getDirectoryPath(projectRoot);
+                // Get full path - try multiple methods
+                projectFullPath = await getFullDirectoryPath(projectRoot);
+                console.log('Project path:', projectFullPath);
                 await scanProjectDirectory();
                 updateProjectDisplay();
                 startAutoRefresh();
@@ -704,34 +706,48 @@
             }
         }
         
-        async function getDirectoryPath(dirHandle) {
+        async function getFullDirectoryPath(dirHandle) {
             try {
-                // Try to get the full path from the directory handle
-                // This works by checking the parent chain
-                const parts = [];
-                let currentHandle = dirHandle;
-                
-                // Traverse up to root, collecting directory names
+                // Method 1: Try using handle.resolve() if available
                 try {
-                    while (true) {
-                        parts.unshift(currentHandle.name);
-                        const parent = await currentHandle.getFileHandle('..').catch(() => null);
-                        if (!parent || parent.name === currentHandle.name) break;
-                        currentHandle = parent;
+                    const path = await dirHandle.resolve();
+                    if (path && path.length > 0) {
+                        return path.join('\\');
                     }
                 } catch (e) {
-                    // If we can't traverse, just use what we have
+                    // Continue to next method
                 }
                 
-                // Construct path based on OS
-                // On Windows, paths typically start with the first directory
+                // Method 2: Traverse up collecting names
+                const parts = [];
+                let current = dirHandle;
+                const visited = new Set();
+                let attempts = 0;
+                const maxAttempts = 20; // Prevent infinite loops
+                
+                while (attempts < maxAttempts) {
+                    attempts++;
+                    const handleStr = current.name;
+                    if (visited.has(handleStr)) break;
+                    visited.add(handleStr);
+                    parts.unshift(current.name);
+                    
+                    try {
+                        const parent = await current.getDirectoryHandle('..');
+                        if (parent.name === current.name) break;
+                        current = parent;
+                    } catch (e) {
+                        break;
+                    }
+                }
+                
                 if (parts.length > 0) {
-                    // For Windows paths shown in UI, format appropriately
-                    const pathString = parts.join('\\');
-                    return pathString;
+                    return parts.join('\\');
                 }
                 
+                // Fallback: Just return the folder name
                 return dirHandle.name;
+                
             } catch (e) {
                 console.log('Path resolution error:', e);
                 return dirHandle.name;
@@ -754,8 +770,11 @@
         }
         
         function updateProjectDetails() {
-            document.getElementById('detail-directory').textContent = projectPath;
-            document.getElementById('detail-location').textContent = projectFullPath || projectRoot?.name || 'Unknown';
+            document.getElementById('detail-directory').textContent = projectPath || 'Unknown';
+            // Always show the full path we captured
+            const displayPath = projectFullPath || projectPath || 'Unknown';
+            document.getElementById('detail-location').textContent = displayPath;
+            console.log('Displaying path:', displayPath);
             
             if (lastModifiedFile) {
                 document.getElementById('detail-last-file').textContent = lastModifiedFile.name;
