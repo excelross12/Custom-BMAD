@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMAD Dashboard v7 - Smart Workflow with Virtual Folders</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #0f1419;
+            color: #e0e6ed;
+            overflow: hidden;
+        }
+        .container { display: flex; height: 100vh; }
+        
+        /* SIDEBAR */
+        .sidebar {
+            width: 280px;
+            min-width: 280px;
+            max-width: 280px;
+            background: linear-gradient(135deg, #1a1f2e 0%, #16213e 100%);
+            color: white;
+            padding: 20px 15px;
+            overflow-y: auto;
+            box-shadow: 2px 0 15px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        .sidebar-header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-logo {
+            font-size: 1.4em;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .project-status {
+            font-size: 0.75em;
+            padding: 8px;
+            background: rgba(72, 187, 120, 0.15);
+            border-radius: 4px;
+            color: #48bb78;
+            border-left: 2px solid #48bb78;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 6px;
+            color: white;
+            margin: 15px 0;
+            font-size: 0.85em;
+        }
+        
+        .search-box::placeholder { color: rgba(255,255,255,0.5); }
+        
+        .sidebar-nav {
+            list-style: none;
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .sidebar-nav li { margin-bottom: 6px; }
+        
+        .sidebar-nav button {
+            width: 100%;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid transparent;
+            color: white;
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        
+        .sidebar-nav button:hover {
+            background: rgba(102, 126, 234, 0.15);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+        
+        .sidebar-nav button.active {
+            background: rgba(102, 126, 234, 0.25);
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 0 0 10px rgba(102, 126, 234, 0.2);
+        }
+        
+        .sidebar-icon { font-size: 0.95em; min-width: 18px; }
+        .file-count { margin-left: auto; font-size: 0.75em; background: rgba(102, 126, 234, 0.3); padding: 2px 6px; border-radius: 3px; min-width: 30px; text-align: center; }
+        
+        /* MAIN CONTENT */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: #0f1419;
+            min-width: 0;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #1a1f2e 0%, #16213e 100%);
+            padding: 15px 25px;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            flex-shrink: 0;
+        }
+        
+        .header-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .header-right {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4); }
+        
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            background: rgba(72, 187, 120, 0.2);
+            color: #48bb78;
+            border: 1px solid rgba(72, 187, 120, 0.3);
+            white-space: nowrap;
+        }
+        
+        /* THREE PANEL LAYOUT */
+        .content-panels {
+            display: flex;
+            flex: 1;
+            min-height: 0;
+            overflow: hidden;
+        }
+        
+        .workflow-panel {
+            width: 350px;
+            min-width: 350px;
+            max-width: 350px;
+            background: #141824;
+            overflow-y: auto;
+            border-right: 1px solid rgba(102, 126, 234, 0.2);
+            padding: 15px;
+        }
+        
+        .content-panel {
+            flex: 1;
+            background: #0f1419;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 20px;
+            min-width: 0;
+        }
+        
+        .preview-panel {
+            width: 280px;
+            min-width: 280px;
+            max-width: 280px;
+            background: #141824;
+            padding: 15px;
+            overflow-y: auto;
+            border-left: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        /* VIRTUAL FOLDER STRUCTURE */
+        .folder-tree {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            line-height: 1.6;
+        }
+        
+        .folder-item {
+            cursor: pointer;
+            padding: 8px;
+            margin: 4px 0;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .folder-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-left-color: #667eea;
+        }
+        
+        .folder-item.active {
+            background: rgba(102, 126, 234, 0.2);
+            border-left-color: #667eea;
+            font-weight: 600;
+        }
+        
+        .folder-epic {
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 12px;
+            padding: 10px 8px;
+            background: rgba(102, 126, 234, 0.08);
+            border-radius: 6px;
+        }
+        
+        .folder-epic.missing {
+            color: #f6ad55;
+            opacity: 0.7;
+        }
+        
+        .folder-story {
+            color: #764ba2;
+            margin-left: 15px;
+            margin-top: 6px;
+            padding: 6px 8px;
+            background: rgba(118, 75, 162, 0.05);
+            border-radius: 4px;
+        }
+        
+        .folder-file {
+            color: #cbd5e1;
+            margin-left: 30px;
+            padding: 4px 8px;
+            font-size: 0.9em;
+        }
+        
+        .folder-file.complete { color: #48bb78; }
+        .folder-file.incomplete { color: #f6ad55; }
+        
+        .indent-1 { margin-left: 0; }
+        .indent-2 { margin-left: 15px; }
+        .indent-3 { margin-left: 30px; }
+        
+        .folder-icon { margin-right: 6px; }
+        .badge { 
+            display: inline-block;
+            background: rgba(246, 173, 85, 0.3);
+            color: #f6ad55;
+            padding: 1px 6px;
+            border-radius: 2px;
+            font-size: 0.75em;
+            margin-left: 6px;
+            font-weight: 600;
+        }
+        
+        .badge.complete {
+            background: rgba(72, 187, 120, 0.3);
+            color: #48bb78;
+        }
+        
+        /* MARKDOWN CONTENT */
+        .markdown-content {
+            color: #e0e6ed;
+            line-height: 1.7;
+            max-width: 100%;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        
+        .markdown-content h1 {
+            font-size: 2em;
+            margin: 20px 0 15px 0;
+            color: #667eea;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.3);
+            padding-bottom: 10px;
+        }
+        
+        .markdown-content h2 {
+            font-size: 1.6em;
+            margin: 18px 0 12px 0;
+            color: #764ba2;
+        }
+        
+        .markdown-content h3 {
+            font-size: 1.3em;
+            margin: 15px 0 10px 0;
+            color: #8b5cf6;
+        }
+        
+        .markdown-content p {
+            margin: 12px 0;
+            color: #cbd5e1;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        
+        .markdown-content code {
+            background: rgba(102, 126, 234, 0.15);
+            color: #fbbf24;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            word-break: break-all;
+        }
+        
+        .markdown-content pre {
+            background: #1a1f2e;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 8px;
+            padding: 15px;
+            overflow-x: auto;
+            margin: 15px 0;
+        }
+        
+        /* PREVIEW PANEL */
+        .preview-section {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-left: 3px solid #667eea;
+        }
+        
+        .preview-label {
+            font-size: 0.75em;
+            color: #a0aec0;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        .preview-value {
+            font-size: 0.9em;
+            color: #e0e6ed;
+            word-break: break-word;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .stat-item {
+            background: rgba(255,255,255,0.05);
+            padding: 8px;
+            border-radius: 4px;
+            border-left: 2px solid #764ba2;
+        }
+        
+        .stat-label {
+            font-size: 0.7em;
+            color: #a0aec0;
+            text-transform: uppercase;
+        }
+        
+        .stat-value {
+            font-size: 1.1em;
+            font-weight: bold;
+            color: #667eea;
+            margin-top: 4px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            background: rgba(102, 126, 234, 0.2);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            color: #667eea;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75em;
+            transition: all 0.2s ease;
+        }
+        
+        .action-btn:hover {
+            background: rgba(102, 126, 234, 0.4);
+            border-color: #667eea;
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.3);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(102, 126, 234, 0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">🎯 BMAD v7</div>
+                <div class="project-status" id="projectStatus">✅ Ready</div>
+            </div>
+            
+            <input type="text" id="searchBox" class="search-box" placeholder="Search...">
+            
+            <ul class="sidebar-nav" id="sidebarNav">
+                <li><button class="nav-btn active" data-section="workflow">
+                    <span class="sidebar-icon">🔄</span><span>Workflow</span><span class="file-count" id="count-workflow">0</span>
+                </button></li>
+                <li><button class="nav-btn" data-section="overview">
+                    <span class="sidebar-icon">📊</span><span>Overview</span>
+                </button></li>
+                <li><button class="nav-btn" data-section="analysis">
+                    <span class="sidebar-icon">📈</span><span>Analysis</span>
+                </button></li>
+                <li><button class="nav-btn" data-section="prd">
+                    <span class="sidebar-icon">📋</span><span>PRD</span>
+                </button></li>
+            </ul>
+        </div>
+        
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- HEADER -->
+            <div class="header">
+                <div class="header-title" id="headerTitle">🔄 Workflow</div>
+                <div class="header-right">
+                    <span class="status-badge" id="projectBadge">Active</span>
+                    <button class="btn" onclick="selectProjectDirectory()">📁 Select Project</button>
+                </div>
+            </div>
+            
+            <!-- CONTENT PANELS -->
+            <div class="content-panels">
+                <!-- WORKFLOW TREE PANEL -->
+                <div class="workflow-panel">
+                    <div id="workflowTree" class="folder-tree"></div>
+                </div>
+                
+                <!-- CONTENT PANEL -->
+                <div class="content-panel" id="contentPanel"></div>
+                
+                <!-- PREVIEW PANEL -->
+                <div class="preview-panel" id="previewPanel"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let projectRoot = null;
+        let projectFiles = {};
+        let currentFile = null;
+        let fileCache = {};
+        let epicMap = {};
+        let storyMap = {};
+        
+        document.querySelectorAll('.nav-btn').forEach(btn => {
+            btn.addEventListener('click', async function() {
+                document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                await renderSection(this.dataset.section);
+            });
+        });
+        
+        async function selectProjectDirectory() {
+            try {
+                projectRoot = await window.showDirectoryPicker();
+                await scanProjectDirectory();
+                await renderSection('workflow');
+            } catch (error) {
+                console.log('Directory selection cancelled');
+            }
+        }
+        
+        async function scanProjectDirectory() {
+            if (!projectRoot) return;
+            projectFiles = { analysis: [], prd: null, epics: [], stories: [] };
+            epicMap = {};
+            storyMap = {};
+            fileCache = {};
+            
+            try {
+                const docsDir = await projectRoot.getDirectoryHandle('docs').catch(() => null);
+                if (!docsDir) return;
+                
+                // Scan standard docs
+                const docFiles = ['brainstorming-session.md', 'project-brief.md', 'prd.md', 'market-research.md', 'front-end-spec.md', 'architecture.md'];
+                for (const file of docFiles) {
+                    try {
+                        const handle = await docsDir.getFileHandle(file);
+                        const fileData = await handle.getFile();
+                        const content = await fileData.text();
+                        const modTime = new Date(fileData.lastModified).toLocaleString();
+                        const item = { name: file, path: `docs/${file}`, modified: modTime, size: fileData.size, content };
+                        
+                        if (file === 'prd.md') projectFiles.prd = item;
+                        else projectFiles.analysis.push(item);
+                        fileCache[`docs/${file}`] = content;
+                    } catch (e) {}
+                }
+                
+                // Scan epics
+                try {
+                    const epicsDir = await docsDir.getDirectoryHandle('epics');
+                    for await (const [name, handle] of epicsDir.entries()) {
+                        if (name.endsWith('.md')) {
+                            const fileData = await handle.getFile();
+                            const content = await fileData.text();
+                            const modTime = new Date(fileData.lastModified).toLocaleString();
+                            projectFiles.epics.push({ name, path: `docs/epics/${name}`, modified: modTime, size: fileData.size, content });
+                            fileCache[`docs/epics/${name}`] = content;
+                            
+                            const num = parseInt(name.match(/\d+/)?.[0] || 0);
+                            epicMap[num] = { name, path: `docs/epics/${name}`, num };
+                        }
+                    }
+                    projectFiles.epics.sort((a, b) => {
+                        const numA = parseInt(a.name.match(/\d+/) || 0);
+                        const numB = parseInt(b.name.match(/\d+/) || 0);
+                        return numA - numB;
+                    });
+                } catch (e) {}
+                
+                // Scan stories
+                try {
+                    const storiesDir = await docsDir.getDirectoryHandle('stories');
+                    for await (const [name, handle] of storiesDir.entries()) {
+                        if (name.endsWith('.md')) {
+                            const fileData = await handle.getFile();
+                            const content = await fileData.text();
+                            const modTime = new Date(fileData.lastModified).toLocaleString();
+                            projectFiles.stories.push({ name, path: `docs/stories/${name}`, modified: modTime, size: fileData.size, content });
+                            fileCache[`docs/stories/${name}`] = content;
+                            
+                            const baseNum = parseInt(name.match(/\d+/)?.[0] || 0);
+                            if (!storyMap[baseNum]) storyMap[baseNum] = [];
+                            storyMap[baseNum].push({ name, path: `docs/stories/${name}`, baseNum });
+                        }
+                    }
+                } catch (e) {}
+                
+                updateCounts();
+            } catch (error) {
+                console.error('Error scanning:', error);
+            }
+        }
+        
+        function updateCounts() {
+            document.getElementById('count-workflow').textContent = Object.keys(epicMap).length + Object.keys(storyMap).length;
+        }
+        
+        async function renderSection(section) {
+            const contentPanel = document.getElementById('contentPanel');
+            
+            switch(section) {
+                case 'workflow':
+                    renderWorkflowTree();
+                    contentPanel.innerHTML = '<div style="padding: 20px; text-align: center; color: #a0aec0;">Select an item from the workflow tree to view details</div>';
+                    break;
+                case 'overview':
+                    contentPanel.innerHTML = renderOverviewPanel();
+                    break;
+                case 'analysis':
+                    contentPanel.innerHTML = renderAnalysisPanel();
+                    break;
+                case 'prd':
+                    if (projectFiles.prd) {
+                        contentPanel.innerHTML = `<div class="markdown-content">${marked.parse(projectFiles.prd.content)}</div>`;
+                    }
+                    break;
+            }
+        }
+        
+        function renderWorkflowTree() {
+            const treePanel = document.getElementById('workflowTree');
+            let html = '';
+            
+            const epicNumbers = Object.keys(epicMap).map(Number).sort((a, b) => a - b);
+            const storyNumbers = Object.keys(storyMap).map(Number).sort((a, b) => a - b);
+            const maxEpic = Math.max(...epicNumbers, 0);
+            const maxStory = Math.max(...storyNumbers, 0);
+            
+            // Render epics with stories
+            for (let i = 1; i <= maxEpic; i++) {
+                const epicKey = i.toString().padStart(3, '0');
+                const isEpicExists = epicNumbers.includes(i);
+                
+                if (isEpicExists) {
+                    const epic = Object.values(epicMap).find(e => e.num === i);
+                    html += `<div class="folder-item folder-epic" onclick="selectFile('${epic.path}')">
+                        <span class="folder-icon">📁</span>Epic ${epicKey} <span class="badge complete">✓</span>
+                    </div>`;
+                } else {
+                    html += `<div class="folder-item folder-epic missing">
+                        <span class="folder-icon">📁</span>Epic ${epicKey} <span class="badge">MISSING</span>
+                    </div>`;
+                }
+                
+                // Stories under this epic
+                for (let storyNum of storyNumbers) {
+                    if (storyMap[storyNum]) {
+                        storyMap[storyNum].forEach(story => {
+                            const isSubstory = story.name.includes('.');
+                            html += `<div class="folder-item folder-story" onclick="selectFile('${story.path}')">
+                                <span class="folder-icon">📝</span>${story.name.replace(/\.md$/, '')} 
+                                <span class="badge complete">✓</span>
+                            </div>`;
+                        });
+                    }
+                }
+            }
+            
+            treePanel.innerHTML = html;
+        }
+        
+        async function selectFile(filePath) {
+            currentFile = filePath;
+            const content = fileCache[filePath] || '';
+            const panel = document.getElementById('contentPanel');
+            
+            const html = marked.parse(content);
+            panel.innerHTML = `<div class="markdown-content">${html}</div>`;
+            document.querySelectorAll('pre code').forEach(block => hljs.highlightElement(block));
+            
+            updatePreview(filePath, content);
+        }
+        
+        function updatePreview(filePath, content) {
+            const panel = document.getElementById('previewPanel');
+            const lines = content.split('\n');
+            const words = content.split(/\s+/).length;
+            const readTime = Math.ceil(words / 200);
+            const headings = content.match(/^#+\s+/gm)?.length || 0;
+            
+            let html = `
+                <div class="preview-section">
+                    <div class="preview-label">📄 File Info</div>
+                    <div class="preview-value" style="font-weight: 600;">${filePath.split('/').pop()}</div>
+                    <div class="preview-value" style="font-size: 0.8em; color: #a0aec0; margin-top: 4px;">${filePath}</div>
+                </div>
+                
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-label">Lines</div>
+                        <div class="stat-value">${lines.length}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Words</div>
+                        <div class="stat-value">${words}</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Read Time</div>
+                        <div class="stat-value">${readTime}m</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-label">Headings</div>
+                        <div class="stat-value">${headings}</div>
+                    </div>
+                </div>
+                
+                <div class="preview-section">
+                    <div class="preview-label">⚡ Actions</div>
+                    <div class="action-buttons">
+                        <button class="action-btn" onclick="copyToClipboard()">📋 Copy</button>
+                        <button class="action-btn" onclick="downloadFile()">⬇️ Download</button>
+                    </div>
+                </div>
+            `;
+            
+            panel.innerHTML = html;
+        }
+        
+        function renderOverviewPanel() {
+            const epicCount = Object.keys(epicMap).length;
+            const storyCount = Object.keys(storyMap).length;
+            
+            return `
+                <div style="padding: 20px;">
+                    <h2 style="color: #667eea; margin-bottom: 20px;">📊 Project Overview</h2>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px;">
+                        <div style="background: rgba(102, 126, 234, 0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 8px; padding: 20px; text-align: center;">
+                            <div style="font-size: 2.5em; font-weight: bold; color: #667eea; margin-bottom: 8px;">${epicCount}</div>
+                            <div style="color: #cbd5e1;">Epics</div>
+                        </div>
+                        <div style="background: rgba(102, 126, 234, 0.1); border: 1px solid rgba(102, 126, 234, 0.3); border-radius: 8px; padding: 20px; text-align: center;">
+                            <div style="font-size: 2.5em; font-weight: bold; color: #667eea; margin-bottom: 8px;">${storyCount}</div>
+                            <div style="color: #cbd5e1;">Stories</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function renderAnalysisPanel() {
+            let html = '<div style="padding: 20px;"><h2 style="color: #667eea; margin-bottom: 20px;">📈 Analysis Files</h2>';
+            
+            projectFiles.analysis.forEach(file => {
+                html += `<div style="background: rgba(102, 126, 234, 0.08); border: 1px solid rgba(102, 126, 234, 0.2); border-radius: 8px; padding: 12px; margin-bottom: 10px; cursor: pointer;" onclick="selectFile('${file.path}')">
+                    <div style="font-weight: 600; color: #e0e6ed;">${file.name}</div>
+                    <div style="font-size: 0.8em; color: #a0aec0; margin-top: 4px;">${file.modified} • ${(file.size / 1024).toFixed(1)}KB</div>
+                </div>`;
+            });
+            
+            html += '</div>';
+            return html;
+        }
+        
+        function copyToClipboard() {
+            const content = fileCache[currentFile];
+            if (content) {
+                navigator.clipboard.writeText(content);
+                alert('Content copied!');
+            }
+        }
+        
+        function downloadFile() {
+            const content = fileCache[currentFile];
+            if (content) {
+                const blob = new Blob([content], { type: 'text/markdown' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = currentFile.split('/').pop();
+                a.click();
+            }
+        }
+    </script>
+</body>
+</html>
