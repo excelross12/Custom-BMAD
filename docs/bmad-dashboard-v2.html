@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BMAD Dashboard v2 - Smart Real-Time Tracker</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f7fa;
+            color: #2d3748;
+            overflow: hidden;
+        }
+        
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        /* SIDEBAR MENU */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            z-index: 1000;
+        }
+        
+        .sidebar-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .sidebar-logo {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sidebar-subtitle {
+            font-size: 0.85em;
+            opacity: 0.9;
+        }
+        
+        .sidebar-nav {
+            list-style: none;
+        }
+        
+        .sidebar-nav li {
+            margin-bottom: 8px;
+        }
+        
+        .sidebar-nav button {
+            width: 100%;
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: left;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .sidebar-nav button:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateX(5px);
+        }
+        
+        .sidebar-nav button.active {
+            background: rgba(255,255,255,0.3);
+            border-left: 4px solid #ffd700;
+            padding-left: 11px;
+        }
+        
+        .sidebar-icon {
+            font-size: 1.2em;
+            min-width: 25px;
+            text-align: center;
+        }
+        
+        .sidebar-stats {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 30px;
+            font-size: 0.9em;
+        }
+        
+        .stat-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .stat-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .stat-label { opacity: 0.8; }
+        .stat-value { font-weight: bold; }
+        
+        /* MAIN CONTENT */
+        .main-content {
+            margin-left: 280px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+        
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-bottom: 2px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .header-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .header-subtitle {
+            font-size: 0.9em;
+            color: #718096;
+            margin-top: 5px;
+        }
+        
+        .header-right {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .refresh-btn:hover {
+            background: #5568d3;
+            transform: scale(1.05);
+        }
+        
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #48bb78;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .status-label {
+            font-size: 0.85em;
+            color: #48bb78;
+            font-weight: 600;
+        }
+        
+        .content-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 30px;
+        }
+        
+        /* SECTION PANELS */
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            border-left: 4px solid #667eea;
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-icon {
+            font-size: 1.3em;
+        }
+        
+        /* PROGRESS TRACKING */
+        .progress-container {
+            margin-bottom: 20px;
+        }
+        
+        .progress-bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+        
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9em;
+            color: #718096;
+        }
+        
+        /* METRICS GRID */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .metric-value {
+            font-size: 2.2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        /* WORKFLOW STEPS */
+        .workflow-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        
+        .workflow-card {
+            background: #f8f9fa;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .workflow-card.completed {
+            border-color: #48bb78;
+            background: #f0fff4;
+        }
+        
+        .workflow-card.current {
+            border-color: #4299e1;
+            background: #ebf8ff;
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.1);
+        }
+        
+        .workflow-card.pending {
+            border-color: #cbd5e0;
+            opacity: 0.7;
+        }
+        
+        .workflow-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .workflow-title {
+            font-weight: 600;
+            color: #2d3748;
+        }
+        
+        .workflow-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.75em;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .badge-completed { background: #48bb78; }
+        .badge-current { background: #4299e1; }
+        .badge-pending { background: #a0aec0; }
+        
+        .workflow-desc {
+            font-size: 0.9em;
+            color: #718096;
+            line-height: 1.5;
+        }
+        
+        /* AGENT PANEL */
+        .agent-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+        }
+        
+        .agent-button {
+            background: white;
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .agent-button:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        /* HIDDEN SECTIONS */
+        .hidden {
+            display: none !important;
+        }
+        
+        /* STATS PANEL */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .stat-card-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .stat-card-label {
+            font-size: 0.85em;
+            color: #718096;
+        }
+        
+        /* SCROLLBAR STYLING */
+        .sidebar::-webkit-scrollbar,
+        .content-area::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .sidebar::-webkit-scrollbar-track,
+        .content-area::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb,
+        .content-area::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+        }
+        
+        .sidebar::-webkit-scrollbar-thumb:hover,
+        .content-area::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- SIDEBAR MENU -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <span>🎯</span>
+                    <span>BMAD v4.45</span>
+                </div>
+                <div class="sidebar-subtitle">Smart Dashboard</div>
+            </div>
+            
+            <ul class="sidebar-nav">
+                <li><button class="nav-btn active" data-section="overview">
+                    <span class="sidebar-icon">📊</span>
+                    <span>Overview</span>
+                </button></li>
+                <li><button class="nav-btn" data-section="workflow">
+                    <span class="sidebar-icon">🔄</span>
+                    <span>Workflow</span>
+                </button></li>
+                <li><button class="nav-btn" data-section="stories">
+                    <span class="sidebar-icon">📝</span>
+                    <span>Stories</span>
+                </button></li>
+                <li><button class="nav-btn" data-section="metrics">
+                    <span class="sidebar-icon">📈</span>
+                    <span>Metrics</span>
+                </button></li>
+                <li><button class="nav-btn" data-section="agents">
+                    <span class="sidebar-icon">🤖</span>
+                    <span>Agents</span>
+                </button></li>
+                <li><button class="nav-btn" data-section="settings">
+                    <span class="sidebar-icon">⚙️</span>
+                    <span>Settings</span>
+                </button></li>
+            </ul>
+            
+            <div class="sidebar-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Phase:</span>
+                    <span class="stat-value" id="phaseLabel">Setup</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Progress:</span>
+                    <span class="stat-value" id="progressLabel">10%</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Stories:</span>
+                    <span class="stat-value" id="storiesLabel">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Last Update:</span>
+                    <span class="stat-value" id="lastUpdateLabel" style="font-size: 0.8em;">Now</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- MAIN CONTENT -->
+        <div class="main-content">
+            <!-- HEADER -->
+            <div class="header">
+                <div class="header-left">
+                    <div>
+                        <div class="header-title" id="headerTitle">📊 Dashboard</div>
+                        <div class="header-subtitle" id="headerSubtitle">Real-time Project Tracking</div>
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <div class="status-indicator"></div>
+                        <span class="status-label">Live</span>
+                    </div>
+                    <button class="refresh-btn" onclick="refreshDashboard()">
+                        <span>🔄</span>
+                        <span>Refresh</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- CONTENT AREA -->
+            <div class="content-area">
+                <!-- OVERVIEW SECTION -->
+                <div id="overview-section" class="section">
+                    <div class="section-title">
+                        <span class="section-icon">📊</span>
+                        <span>Project Overview</span>
+                    </div>
+                    
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-value" id="metricPhase">Setup</div>
+                            <div class="metric-label">Current Phase</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="metricProgress">10%</div>
+                            <div class="metric-label">Completion</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="metricStories">0</div>
+                            <div class="metric-label">Stories Created</div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-value" id="metricEpics">0</div>
+                            <div class="metric-label">Epics</div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill" style="width: 10%;"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>Progress</span>
+                            <span id="progressPercent">10%</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- WORKFLOW SECTION -->
+                <div id="workflow-section" class="section hidden">
+                    <div class="section-title">
+                        <span class="section-icon">🔄</span>
+                        <span>Development Workflow (10 Steps)</span>
+                    </div>
+                    <div class="workflow-grid" id="workflowGrid">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- STORIES SECTION -->
+                <div id="stories-section" class="section hidden">
+                    <div class="section-title">
+                        <span class="section-icon">📝</span>
+                        <span>Stories & Epics</span>
+                    </div>
+                    <div id="storiesContainer">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- METRICS SECTION -->
+                <div id="metrics-section" class="section hidden">
+                    <div class="section-title">
+                        <span class="section-icon">📈</span>
+                        <span>Project Metrics</span>
+                    </div>
+                    <div class="stats-grid" id="metricsGrid">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- AGENTS SECTION -->
+                <div id="agents-section" class="section hidden">
+                    <div class="section-title">
+                        <span class="section-icon">🤖</span>
+                        <span>Quick Agent Access</span>
+                    </div>
+                    <div class="agent-grid" id="agentGrid">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- SETTINGS SECTION -->
+                <div id="settings-section" class="section hidden">
+                    <div class="section-title">
+                        <span class="section-icon">⚙️</span>
+                        <span>Settings</span>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 15px;">
+                            <strong>Project Name:</strong><br>
+                            <input type="text" id="projectName" value="My BMAD Project" 
+                                   style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                        </label>
+                        <label style="display: block; margin-bottom: 15px;">
+                            <strong>Auto-refresh Interval (seconds):</strong><br>
+                            <input type="number" id="refreshInterval" value="3" min="1" max="60"
+                                   style="width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #e2e8f0; border-radius: 6px;">
+                        </label>
+                        <button onclick="saveSettings()" style="background: #667eea; color: white; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-weight: 600;">
+                            Save Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // CONSTANTS
+        const WORKFLOW_STEPS = [
+            { num: 1, title: 'Setup', desc: 'Project setup and initialization', status: 'completed' },
+            { num: 2, title: 'Analysis', desc: 'Brainstorming and discovery', status: 'current' },
+            { num: 3, title: 'Requirements', desc: 'Create PRD', status: 'pending' },
+            { num: 4, title: 'Design UI', desc: 'Frontend specification', status: 'pending' },
+            { num: 5, title: 'Architecture', desc: 'System design', status: 'pending' },
+            { num: 6, title: 'Break Down', desc: 'Split into epics', status: 'pending' },
+            { num: 7, title: 'Stories', desc: 'Detailed tasks', status: 'pending' },
+            { num: 8, title: 'Implement', desc: 'Write code', status: 'pending' },
+            { num: 9, title: 'Test', desc: 'Quality assurance', status: 'pending' },
+            { num: 10, title: 'Deploy', desc: 'Production ready', status: 'pending' }
+        ];
+        
+        const AGENTS = [
+            { name: 'Analyst', icon: '📈', cmd: 'Act as BMAD Analyst' },
+            { name: 'PM', icon: '📊', cmd: 'Act as BMAD Product Manager' },
+            { name: 'UX Expert', icon: '🎨', cmd: 'Act as BMAD UX Expert' },
+            { name: 'Architect', icon: '🏗️', cmd: 'Act as BMAD Architect' },
+            { name: 'Product Owner', icon: '📋', cmd: 'Act as BMAD Product Owner' },
+            { name: 'Scrum Master', icon: '🏃', cmd: 'Act as BMAD Scrum Master' },
+            { name: 'Developer', icon: '💻', cmd: 'Act as BMAD Developer' },
+            { name: 'QA', icon: '🧪', cmd: 'Act as BMAD QA' },
+            { name: 'Master', icon: '🎓', cmd: 'Act as BMAD Master' },
+            { name: 'Orchestrator', icon: '🎭', cmd: 'Act as BMAD Orchestrator' }
+        ];
+        
+        // INITIALIZATION
+        function init() {
+            setupNavigation();
+            populateWorkflow();
+            populateAgents();
+            loadSettings();
+            updateDashboard();
+            startAutoRefresh();
+        }
+        
+        // NAVIGATION
+        function setupNavigation() {
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const section = this.dataset.section;
+                    showSection(section);
+                    updateActiveNav(this);
+                });
+            });
+        }
+        
+        function showSection(section) {
+            document.querySelectorAll('[id$="-section"]').forEach(el => {
+                el.classList.add('hidden');
+            });
+            const targetSection = document.getElementById(section + '-section');
+            if (targetSection) {
+                targetSection.classList.remove('hidden');
+            }
+            updateHeaderText(section);
+        }
+        
+        function updateHeaderText(section) {
+            const titles = {
+                overview: '📊 Dashboard Overview',
+                workflow: '🔄 Development Workflow',
+                stories: '📝 Stories & Epics',
+                metrics: '📈 Project Metrics',
+                agents: '🤖 BMAD Agents',
+                settings: '⚙️ Settings'
+            };
+            document.getElementById('headerTitle').textContent = titles[section] || 'Dashboard';
+        }
+        
+        function updateActiveNav(btn) {
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+        
+        // WORKFLOW POPULATION
+        function populateWorkflow() {
+            const grid = document.getElementById('workflowGrid');
+            grid.innerHTML = WORKFLOW_STEPS.map(step => `
+                <div class="workflow-card ${step.status}">
+                    <div class="workflow-header">
+                        <div class="workflow-title">Step ${step.num}: ${step.title}</div>
+                        <span class="workflow-badge badge-${step.status}">${step.status.toUpperCase()}</span>
+                    </div>
+                    <div class="workflow-desc">${step.desc}</div>
+                </div>
+            `).join('');
+        }
+        
+        // AGENTS POPULATION
+        function populateAgents() {
+            const grid = document.getElementById('agentGrid');
+            grid.innerHTML = AGENTS.map((agent, idx) => `
+                <button class="agent-button" onclick="copyToClipboard('${agent.cmd}')">
+                    <div style="font-size: 1.5em; margin-bottom: 8px;">${agent.icon}</div>
+                    <div>${agent.name}</div>
+                </button>
+            `).join('');
+        }
+        
+        // COPY TO CLIPBOARD
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Command copied: ' + text);
+            });
+        }
+        
+        // DASHBOARD UPDATE
+        function updateDashboard() {
+            const progress = Math.random() * 100 | 0; // Mock data
+            const stories = Math.floor(Math.random() * 10) + 1;
+            const epics = Math.floor(Math.random() * 5) + 1;
+            
+            document.getElementById('metricProgress').textContent = progress + '%';
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('progressPercent').textContent = progress + '%';
+            document.getElementById('progressLabel').textContent = progress + '%';
+            document.getElementById('metricStories').textContent = stories;
+            document.getElementById('storiesLabel').textContent = stories;
+            document.getElementById('metricEpics').textContent = epics;
+            document.getElementById('lastUpdateLabel').textContent = new Date().toLocaleTimeString();
+        }
+        
+        // REFRESH
+        function refreshDashboard() {
+            updateDashboard();
+            document.querySelector('.refresh-btn').style.transform = 'rotate(360deg)';
+            setTimeout(() => {
+                document.querySelector('.refresh-btn').style.transform = 'scale(1.05)';
+            }, 300);
+        }
+        
+        // AUTO REFRESH
+        let autoRefreshInterval;
+        function startAutoRefresh() {
+            const interval = localStorage.getItem('bmadRefreshInterval') || 3;
+            autoRefreshInterval = setInterval(updateDashboard, interval * 1000);
+        }
+        
+        // SETTINGS
+        function loadSettings() {
+            const savedName = localStorage.getItem('bmadProjectName');
+            if (savedName) {
+                document.getElementById('projectName').value = savedName;
+            }
+            const savedInterval = localStorage.getItem('bmadRefreshInterval');
+            if (savedInterval) {
+                document.getElementById('refreshInterval').value = savedInterval;
+            }
+        }
+        
+        function saveSettings() {
+            const projectName = document.getElementById('projectName').value;
+            const refreshInterval = document.getElementById('refreshInterval').value;
+            
+            localStorage.setItem('bmadProjectName', projectName);
+            localStorage.setItem('bmadRefreshInterval', refreshInterval);
+            
+            clearInterval(autoRefreshInterval);
+            startAutoRefresh();
+            
+            alert('Settings saved!');
+        }
+        
+        // START
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>
