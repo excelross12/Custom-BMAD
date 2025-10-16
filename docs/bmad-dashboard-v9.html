@@ -617,7 +617,7 @@
                 
                 <div class="detail-item">
                     <div class="detail-label">📍 Full Path</div>
-                    <div class="detail-value" id="detail-location">-</div>
+                    <div class="detail-value" id="detail-location" style="font-family: 'Courier New', monospace; font-size: 0.8em; word-break: break-all; background: rgba(102, 126, 234, 0.05); padding: 6px; border-radius: 4px; margin-top: 4px;">-</div>
                 </div>
                 
                 <div class="detail-item">
@@ -706,10 +706,34 @@
         
         async function getDirectoryPath(dirHandle) {
             try {
-                const path = await dirHandle.resolve();
-                return '/' + path.join('/');
+                // Try to get the full path from the directory handle
+                // This works by checking the parent chain
+                const parts = [];
+                let currentHandle = dirHandle;
+                
+                // Traverse up to root, collecting directory names
+                try {
+                    while (true) {
+                        parts.unshift(currentHandle.name);
+                        const parent = await currentHandle.getFileHandle('..').catch(() => null);
+                        if (!parent || parent.name === currentHandle.name) break;
+                        currentHandle = parent;
+                    }
+                } catch (e) {
+                    // If we can't traverse, just use what we have
+                }
+                
+                // Construct path based on OS
+                // On Windows, paths typically start with the first directory
+                if (parts.length > 0) {
+                    // For Windows paths shown in UI, format appropriately
+                    const pathString = parts.join('\\');
+                    return pathString;
+                }
+                
+                return dirHandle.name;
             } catch (e) {
-                // Fallback: Use relative path indication
+                console.log('Path resolution error:', e);
                 return dirHandle.name;
             }
         }
