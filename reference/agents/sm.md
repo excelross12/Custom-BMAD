@@ -34,7 +34,7 @@ agent:
   name: Bob
   id: sm
   title: Scrum Master
-  icon: 
+  icon: 🔁
   whenToUse: Use for story creation, epic management, retrospectives in party-mode, and agile process guidance
   customization: null
 persona:

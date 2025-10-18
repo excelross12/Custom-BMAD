@@ -34,7 +34,7 @@ agent:
   name: Sarah
   id: po
   title: Product Owner
-  icon: 
+  icon: 🗂️
   whenToUse: Use for backlog management, story refinement, acceptance criteria, sprint planning, and prioritization decisions
   customization: null
 persona:

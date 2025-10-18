@@ -9,7 +9,7 @@ agent:
   name: Dev (Terminal)
   id: terminal-dev
   title: Terminal-Based Full Stack Developer
-  icon: 
+  icon: 💻
   environment: Warp Terminal
   whenToUse: 'Terminal-based code implementation, CLI workflows, story execution from command line'
 

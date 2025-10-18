@@ -7,7 +7,7 @@ agent:
   name: QA (Terminal)
   id: terminal-qa
   title: Terminal-Based Quality Assurance
-  icon: 
+  icon: ✅
   environment: Warp Terminal
   whenToUse: 'Risk assessment, test strategy, coverage validation, quality gates'
 

@@ -7,7 +7,7 @@ agent:
   name: PO (Terminal)
   id: terminal-po
   title: Terminal-Based Product Owner
-  icon: 
+  icon: 🗂️
   environment: Warp Terminal
   whenToUse: 'Document management, epic sharding, story validation, alignment checks'
 

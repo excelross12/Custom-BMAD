@@ -69,11 +69,13 @@ Act as BMAD QA. Review this implementation.
 
 ### 5. Track Progress
 
-Open `docs/bmad-dashboard.html` in Chrome/Edge for:
+Open `docs/bmad-dashboard-modern.html` in Chrome/Edge for:
+- ✨ **Modern UI** with light/dark theme toggle
 - 🌲 **Hierarchical workflow tree** with epic grouping
-- 🔄 **Auto-refresh** (5-second polling)
-- 📍 **Project location tracking** with full path display
-- 📊 **Real-time statistics** and file previews
+- 🔄 **Auto-refresh** (5-second polling with toggle)
+- 📊 **Project details panel** with file metadata
+- 📁 **File viewer** with markdown rendering
+- 🎯 **Click-outside to close** and ESC key support
 
 ---
 
@@ -140,9 +142,15 @@ project-root/
 
 ---
 
-## Enhanced Dashboard (v9)
+## Modern Dashboard v2.0 ⭐ NEW!
 
 ### Key Features
+
+✅ **Modern UI Design**
+- 🎨 Light/Dark theme toggle with smooth transitions
+- 💎 Professional color system and typography
+- 🖱️ Click-outside to close panels + ESC key support
+- 📱 Responsive layout with three-panel design
 
 ✅ **Smart Project Loading**
 - Direct folder selection with File System Access API
@@ -154,30 +162,34 @@ project-root/
 - 📁 **Collapsible Nodes**: Expand/collapse epic sections
 - 📝 **Story Nesting**: Stories and substories properly organized
 - 🎯 **Visual Hierarchy**: Clear indentation and color coding
-- 📊 **Counters**: Shows epic variants, stories, substories count
+- 📊 **Gap Detection**: Identifies missing epics/stories
 
 ✅ **Auto-Refresh System**
+- ▶️ Toggle auto-refresh on/off
 - Polls every 5 seconds for file changes
-- Smart detection (only rescans when needed)
-- Updates workflow tree and file cache automatically
-- Tracks last modified file with timestamp
+- 🔔 Notification toasts when changes detected
+- Tracks file metadata and timestamps
 
-✅ **Three-Panel Layout**
-- **Left Sidebar**: Navigation and project details
-- **Middle Panel**: Content display with markdown rendering
-- **Right Panel**: Workflow tree OR file preview
+✅ **Project Details Panel**
+- 📎 **Selected File**: Shows name, path, full date/time
+- 🔄 **Last Refresh**: Mode (manual/auto) and timestamp  
+- ✨ **Latest File**: Most recently modified file
+- 📅 Complete datetime display for all files
 
-✅ **Analysis Files Integration**
-- Dedicated section for planning documents
-- Includes: PRD, Architecture, Market Research, etc.
-- Collapsible tree organization
+✅ **File Viewer**
+- Markdown rendering with syntax highlighting
+- Smooth slide-in panel from right
+- Click outside or press ESC to close
+- Code block highlighting support
 
 ### Open Dashboard
 
-1. Open `docs/bmad-dashboard.html` in **Chrome** or **Edge**
+1. Open `docs/bmad-dashboard-modern.html` in **Chrome** or **Edge**
 2. Click **"Select Project Folder"**
 3. Choose your project root directory
-4. Explore enhanced workflow tree and live previews
+4. Explore the modern interface and features!
+
+> **Note**: Classic dashboard still available at `docs/bmad-dashboard.html`
 
 ### Epic Grouping Example
 

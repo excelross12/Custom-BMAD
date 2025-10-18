@@ -7,7 +7,7 @@ agent:
   name: SM (Terminal)
   id: terminal-sm
   title: Terminal-Based Scrum Master
-  icon: 
+  icon: 🔁
   environment: Warp Terminal
   whenToUse: 'Story creation, epic management, workflow orchestration from terminal'
 

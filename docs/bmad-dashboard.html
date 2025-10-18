@@ -3,33 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BMAD Dashboard v9 - Smart Project Tracking with Auto-Refresh</title>
+    <title>BMAD Dashboard v10 - Phase-Organized Workflow with Hybrid Auto-Refresh</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            /* Light Theme (Default) */
+            --bg-primary: #f8f9fa;
+            --bg-secondary: #ffffff;
+            --bg-tertiary: #f1f3f5;
+            --bg-hover: #e9ecef;
+            
+            --text-primary: #212529;
+            --text-secondary: #495057;
+            --text-tertiary: #6c757d;
+            --text-muted: #adb5bd;
+            
+            --border-color: #dee2e6;
+            --border-subtle: #e9ecef;
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.08);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+            
+            /* Phase Colors - Light */
+            --phase-discovery: #0ea5e9;
+            --phase-discovery-bg: #e0f2fe;
+            --phase-discovery-border: #bae6fd;
+            
+            --phase-planning: #8b5cf6;
+            --phase-planning-bg: #ede9fe;
+            --phase-planning-border: #ddd6fe;
+            
+            --phase-development: #10b981;
+            --phase-development-bg: #d1fae5;
+            --phase-development-border: #a7f3d0;
+            
+            --phase-testing: #f59e0b;
+            --phase-testing-bg: #fef3c7;
+            --phase-testing-border: #fde68a;
+            
+            /* Status Colors */
+            --status-complete: #10b981;
+            --status-complete-bg: #d1fae5;
+            --status-progress: #f59e0b;
+            --status-progress-bg: #fef3c7;
+            --status-pending: #6c757d;
+            --status-pending-bg: #e9ecef;
+            
+            /* Accent Colors */
+            --accent-primary: #6366f1;
+            --accent-primary-hover: #4f46e5;
+            --accent-secondary: #8b5cf6;
+            --accent-success: #10b981;
+            --accent-warning: #f59e0b;
+            --accent-error: #ef4444;
+        }
+        
+        [data-theme="dark"] {
+            /* Dark Theme */
+            --bg-primary: #0f1419;
+            --bg-secondary: #1a1f2e;
+            --bg-tertiary: #141824;
+            --bg-hover: rgba(255,255,255,0.05);
+            
+            --text-primary: #e0e6ed;
+            --text-secondary: #cbd5e1;
+            --text-tertiary: #94a3b8;
+            --text-muted: #64748b;
+            
+            --border-color: rgba(255,255,255,0.1);
+            --border-subtle: rgba(255,255,255,0.05);
+            
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.4);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.5);
+            --shadow-xl: 0 20px 25px rgba(0,0,0,0.6);
+            
+            /* Phase Colors - Dark */
+            --phase-discovery: #38bdf8;
+            --phase-discovery-bg: rgba(14, 165, 233, 0.15);
+            --phase-discovery-border: rgba(14, 165, 233, 0.3);
+            
+            --phase-planning: #a78bfa;
+            --phase-planning-bg: rgba(139, 92, 246, 0.15);
+            --phase-planning-border: rgba(139, 92, 246, 0.3);
+            
+            --phase-development: #34d399;
+            --phase-development-bg: rgba(16, 185, 129, 0.15);
+            --phase-development-border: rgba(16, 185, 129, 0.3);
+            
+            --phase-testing: #fbbf24;
+            --phase-testing-bg: rgba(245, 158, 11, 0.15);
+            --phase-testing-border: rgba(245, 158, 11, 0.3);
+            
+            /* Status Colors - Dark */
+            --status-complete: #34d399;
+            --status-complete-bg: rgba(16, 185, 129, 0.2);
+            --status-progress: #fbbf24;
+            --status-progress-bg: rgba(245, 158, 11, 0.2);
+            --status-pending: #94a3b8;
+            --status-pending-bg: rgba(148, 163, 184, 0.2);
+            
+            /* Accent Colors - Dark */
+            --accent-primary: #818cf8;
+            --accent-primary-hover: #6366f1;
+            --accent-secondary: #a78bfa;
+            --accent-success: #34d399;
+            --accent-warning: #fbbf24;
+            --accent-error: #f87171;
+        }
+        
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
         body { 
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #0f1419;
-            color: #e0e6ed;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             overflow: hidden;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
-        .container { display: flex; height: 100vh; }
+        .container { 
+            display: flex; 
+            height: 100vh;
+        }
         
         /* SIDEBAR */
         .sidebar {
             width: 280px;
             min-width: 280px;
             max-width: 280px;
-            background: linear-gradient(135deg, #1a1f2e 0%, #16213e 100%);
-            color: white;
-            padding: 20px 15px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 24px 16px;
             overflow-y: auto;
-            box-shadow: 2px 0 15px rgba(0,0,0,0.4);
+            box-shadow: var(--shadow-md);
             display: flex;
             flex-direction: column;
-            border-right: 1px solid rgba(102, 126, 234, 0.2);
+            border-right: 1px solid var(--border-color);
+            transition: all 0.3s ease;
         }
         
         .sidebar-header {
@@ -635,6 +753,199 @@
         ::-webkit-scrollbar-thumb:hover {
             background: rgba(102, 126, 234, 0.5);
         }
+        
+        /* PHASE-BASED WORKFLOW STYLES */
+        .phase-section {
+            margin-bottom: 15px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .phase-header {
+            padding: 12px 15px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid transparent;
+        }
+        
+        .phase-header:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .phase-header.expanded {
+            border-bottom-color: rgba(255,255,255,0.1);
+        }
+        
+        .phase-discovery .phase-header {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(37, 99, 235, 0.1) 100%);
+            color: #60a5fa;
+        }
+        
+        .phase-planning .phase-header {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(124, 58, 237, 0.1) 100%);
+            color: #a78bfa;
+        }
+        
+        .phase-development .phase-header {
+            background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(22, 163, 74, 0.1) 100%);
+            color: #4ade80;
+        }
+        
+        .phase-testing .phase-header {
+            background: linear-gradient(135deg, rgba(251, 146, 60, 0.15) 0%, rgba(249, 115, 22, 0.1) 100%);
+            color: #fb923c;
+        }
+        
+        .phase-icon {
+            font-size: 1.2em;
+            min-width: 24px;
+            text-align: center;
+        }
+        
+        .phase-title {
+            flex: 1;
+            font-size: 0.9em;
+            letter-spacing: 0.5px;
+        }
+        
+        .phase-status {
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .phase-status.complete {
+            background: rgba(34, 197, 94, 0.2);
+            color: #4ade80;
+        }
+        
+        .phase-status.in-progress {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+        }
+        
+        .phase-status.not-started {
+            background: rgba(156, 163, 175, 0.2);
+            color: #9ca3af;
+        }
+        
+        .phase-progress {
+            font-size: 0.75em;
+            color: rgba(255,255,255,0.6);
+            min-width: 40px;
+            text-align: right;
+        }
+        
+        .phase-expand-icon {
+            font-size: 0.8em;
+            transition: transform 0.3s ease;
+            min-width: 16px;
+            text-align: center;
+        }
+        
+        .phase-header.collapsed .phase-expand-icon {
+            transform: rotate(-90deg);
+        }
+        
+        .phase-content {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .phase-content.expanded {
+            max-height: 2000px;
+            padding: 8px 0;
+        }
+        
+        .phase-file-item {
+            padding: 8px 15px 8px 45px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-left: 3px solid transparent;
+            color: #cbd5e1;
+        }
+        
+        .phase-file-item:hover {
+            background: rgba(255,255,255,0.05);
+            border-left-color: currentColor;
+            padding-left: 48px;
+        }
+        
+        .phase-file-item.active {
+            background: rgba(102, 126, 234, 0.15);
+            border-left-color: #667eea;
+            font-weight: 600;
+        }
+        
+        .phase-file-icon {
+            font-size: 0.9em;
+            min-width: 18px;
+        }
+        
+        .phase-file-status {
+            margin-left: auto;
+            font-size: 0.7em;
+        }
+        
+        .phase-progress-bar {
+            height: 4px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 0 15px 8px 45px;
+        }
+        
+        .phase-progress-fill {
+            height: 100%;
+            transition: width 0.5s ease;
+            border-radius: 2px;
+        }
+        
+        .phase-discovery .phase-progress-fill {
+            background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%);
+        }
+        
+        .phase-planning .phase-progress-fill {
+            background: linear-gradient(90deg, #8b5cf6 0%, #a78bfa 100%);
+        }
+        
+        .phase-development .phase-progress-fill {
+            background: linear-gradient(90deg, #22c55e 0%, #4ade80 100%);
+        }
+        
+        .phase-testing .phase-progress-fill {
+            background: linear-gradient(90deg, #f97316 0%, #fb923c 100%);
+        }
+        
+        .phase-subsection {
+            margin: 8px 0;
+        }
+        
+        .phase-subsection-header {
+            padding: 6px 15px 6px 45px;
+            font-size: 0.8em;
+            font-weight: 600;
+            color: #8b5cf6;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            opacity: 0.8;
+        }
     </style>
 </head>
 <body>
@@ -642,7 +953,7 @@
         <!-- SIDEBAR -->
         <div class="sidebar">
             <div class="sidebar-header">
-                <div class="sidebar-logo">🎯 BMAD v9</div>
+                <div class="sidebar-logo">🎯 BMAD v10</div>
                 <div class="project-status" id="projectStatus">✅ Ready</div>
                 <div class="project-path-display" id="projectPath" style="display:none;"></div>
             </div>
@@ -701,6 +1012,10 @@
                 </div>
                 <div class="header-right">
                     <span class="status-badge" id="projectBadge">Active</span>
+                    <button class="btn btn-icon" onclick="toggleTheme()" id="themeToggle" title="Toggle theme">
+                        <span id="themeIcon">🌙</span>
+                    </button>
+                    <button class="btn" onclick="manualRefresh()" id="refreshBtn" style="display:none;">🔄 Refresh</button>
                     <button class="btn" onclick="selectProjectDirectory()">📁 Select Project</button>
                 </div>
             </div>
@@ -736,7 +1051,17 @@
         let lastModifiedFile = null;
         let lastModifiedTime = null;
         let autoRefreshInterval = null;
+        let signalCheckInterval = null;
         let previousFileState = {};
+        let lastSignalCheck = 0;
+        
+        // Phase organization
+        let phaseFiles = {
+            discovery: [],
+            planning: [],
+            development: { epics: [], stories: [] },
+            testing: []
+        };
         
         document.querySelectorAll('.nav-btn').forEach(btn => {
             btn.addEventListener('click', async function() {
@@ -759,6 +1084,29 @@
                 await renderSection('workflow');
             } catch (error) {
                 console.log('Directory selection cancelled');
+            }
+        }
+        
+        async function manualRefresh() {
+            if (!projectRoot) {
+                showRefreshNotification('⚠️ Please select a project first', 2000);
+                return;
+            }
+            
+            try {
+                await scanProjectDirectory();
+                updateProjectDetails();
+                
+                // Re-render current section
+                const activeBtn = document.querySelector('.nav-btn.active');
+                if (activeBtn) {
+                    await renderSection(activeBtn.dataset.section);
+                }
+                
+                showRefreshNotification('✅ Dashboard refreshed manually', 2000);
+            } catch (error) {
+                console.error('Manual refresh failed:', error);
+                showRefreshNotification('❌ Refresh failed', 2000);
             }
         }
         
@@ -814,12 +1162,21 @@
             const pathElement = document.getElementById('projectPath');
             const headerPath = document.getElementById('headerPath');
             const detailsSection = document.getElementById('projectDetails');
+            const refreshBtn = document.getElementById('refreshBtn');
             
             if (projectPath) {
+                // Show folder name in sidebar badge
                 pathElement.textContent = `📁 ${projectPath}`;
                 pathElement.style.display = 'block';
-                headerPath.textContent = `Project: ${projectPath}`;
+                
+                // Show full path in header
+                const displayPath = projectFullPath || projectPath;
+                headerPath.innerHTML = `<strong>Full Path:</strong> ${displayPath}`;
                 headerPath.style.display = 'block';
+                
+                // Show refresh button once project is selected
+                if (refreshBtn) refreshBtn.style.display = 'inline-block';
+                
                 detailsSection.style.display = 'block';
                 updateProjectDetails();
             }
@@ -864,6 +1221,14 @@
             otherFiles = [];
             analysisFiles = [];
             
+            // Reset phase organization
+            phaseFiles = {
+                discovery: [],
+                planning: [],
+                development: { epics: [], stories: [] },
+                testing: []
+            };
+            
             try {
                 const docsDir = await projectRoot.getDirectoryHandle('docs').catch(() => null);
                 if (!docsDir) {
@@ -873,20 +1238,42 @@
                 
                 await readProjectMetadata(docsDir);
                 
-                // Scan standard docs
-                const docFiles = ['brainstorming-session.md', 'project-brief.md', 'prd.md', 'market-research.md', 'front-end-spec.md', 'architecture.md'];
-                for (const file of docFiles) {
+                // Scan standard docs and categorize by phase
+                const docFiles = [
+                    { name: 'brainstorming-session.md', phase: 'discovery' },
+                    { name: 'project-brief.md', phase: 'discovery' },
+                    { name: 'market-research.md', phase: 'discovery' },
+                    { name: 'prd.md', phase: 'planning' },
+                    { name: 'architecture.md', phase: 'planning' },
+                    { name: 'front-end-spec.md', phase: 'planning' }
+                ];
+                
+                for (const fileInfo of docFiles) {
                     try {
-                        const handle = await docsDir.getFileHandle(file);
+                        const handle = await docsDir.getFileHandle(fileInfo.name);
                         const fileData = await handle.getFile();
                         const content = await fileData.text();
                         const modTime = new Date(fileData.lastModified);
-                        const item = { name: file, path: `docs/${file}`, modified: modTime, size: fileData.size, content };
+                        const item = { 
+                            name: fileInfo.name, 
+                            path: `docs/${fileInfo.name}`, 
+                            modified: modTime, 
+                            size: fileData.size, 
+                            content,
+                            phase: fileInfo.phase
+                        };
                         
-                        if (file === 'prd.md') projectFiles.prd = item;
-                        else analysisFiles.push(item);
+                        if (fileInfo.name === 'prd.md') projectFiles.prd = item;
                         
-                        fileCache[`docs/${file}`] = content;
+                        // Categorize by phase
+                        if (fileInfo.phase === 'discovery') {
+                            phaseFiles.discovery.push(item);
+                        } else if (fileInfo.phase === 'planning') {
+                            phaseFiles.planning.push(item);
+                        }
+                        
+                        analysisFiles.push(item);
+                        fileCache[`docs/${fileInfo.name}`] = content;
                         trackModified(item, modTime);
                     } catch (e) {}
                 }
@@ -908,7 +1295,9 @@
                             if (epicNumMatch) {
                                 const num = parseInt(epicNumMatch[1]);
                                 if (!epicMap[num]) epicMap[num] = [];
-                                epicMap[num].push({ name, path: `docs/epics/${name}`, num });
+                                const epicItem = { name, path: `docs/epics/${name}`, num };
+                                epicMap[num].push(epicItem);
+                                phaseFiles.development.epics.push(epicItem);
                                 trackModified(item, modTime);
                             }
                         }
@@ -940,11 +1329,15 @@
                                 const epicNum = parseInt(storyNumMatch[1]);
                                 if (!storyMap[epicNum]) storyMap[epicNum] = { stories: [], substories: [] };
                                 
+                                const storyItem = { name, path: `docs/stories/${name}`, epicNum };
+                                
                                 if (isSubstory) {
-                                    storyMap[epicNum].substories.push({ name, path: `docs/stories/${name}`, epicNum });
+                                    storyMap[epicNum].substories.push(storyItem);
                                 } else {
-                                    storyMap[epicNum].stories.push({ name, path: `docs/stories/${name}`, epicNum });
+                                    storyMap[epicNum].stories.push(storyItem);
                                 }
+                                
+                                phaseFiles.development.stories.push(storyItem);
                                 trackModified(item, modTime);
                             }
                         }
@@ -1006,7 +1399,41 @@
                                 size: fileData.size, 
                                 content 
                             };
-                            otherFiles.push(item);
+                            
+                            // Check if this is an epic or story file that should go in workflow
+                            const epicMatch = name.match(/epic[_-]?(\d+)/i);
+                            const storyMatch = name.match(/(?:sub)?story[_-]?(\d+)/i);
+                            
+                            if (epicMatch) {
+                                // This is an epic file in root docs folder
+                                const num = parseInt(epicMatch[1]);
+                                if (!epicMap[num]) epicMap[num] = [];
+                                const epicItem = { name, path: `docs/${name}`, num };
+                                epicMap[num].push(epicItem);
+                                phaseFiles.development.epics.push(epicItem);
+                                projectFiles.epics.push(item);
+                            } else if (storyMatch) {
+                                // This is a story file in root docs folder
+                                const epicNum = parseInt(storyMatch[1]);
+                                const isSubstory = name.match(/substory/i);
+                                
+                                if (!storyMap[epicNum]) storyMap[epicNum] = { stories: [], substories: [] };
+                                
+                                const storyItem = { name, path: `docs/${name}`, epicNum };
+                                
+                                if (isSubstory) {
+                                    storyMap[epicNum].substories.push(storyItem);
+                                } else {
+                                    storyMap[epicNum].stories.push(storyItem);
+                                }
+                                
+                                phaseFiles.development.stories.push(storyItem);
+                                projectFiles.stories.push(item);
+                            } else {
+                                // This is truly an "other" file
+                                otherFiles.push(item);
+                            }
+                            
                             fileCache[`docs/${name}`] = content;
                             trackModified(item, modTime);
                         } catch (e) {}
@@ -1063,93 +1490,187 @@
             const treePanel = document.getElementById('workflowTree');
             let html = '';
             
-            const epicNumbers = Object.keys(epicMap).map(Number).sort((a, b) => a - b);
-            const maxEpic = projectMetadata.expectedEpics || (epicNumbers.length > 0 ? Math.max(...epicNumbers) : 0);
+            // Check if we have any files
+            const hasFiles = phaseFiles.discovery.length > 0 || 
+                           phaseFiles.planning.length > 0 || 
+                           phaseFiles.development.epics.length > 0 || 
+                           phaseFiles.development.stories.length > 0 || 
+                           phaseFiles.testing.length > 0;
             
-            if (maxEpic === 0 && epicNumbers.length === 0 && analysisFiles.length === 0) {
+            if (!hasFiles) {
                 treePanel.innerHTML = '<div style="padding: 10px; color: #a0aec0; font-size: 0.85em;">No files found. Select a project first.</div>';
                 return;
             }
             
-            // Render epics with grouped variants and nested stories
-            for (let i = 1; i <= maxEpic; i++) {
-                const epicKey = i.toString().padStart(3, '0');
-                const epicVariants = epicMap[i] || [];
-                const hasEpic = epicVariants.length > 0;
-                
-                if (hasEpic) {
-                    // Epic parent node (collapsible)
-                    const epicId = `epic-${epicKey}`;
-                    html += `<div class="folder-item folder-epic" onclick="toggleEpicNode('${epicId}', event)">
-                        <span class="folder-icon expand-icon" id="${epicId}-icon">▼</span>
-                        <span class="folder-icon">📁</span>Epic ${epicKey} (${epicVariants.length})
-                        <span class="badge complete">✓</span>
-                    </div>`;
-                    
-                    // Epic children container (all variants + stories)
-                    html += `<div class="epic-children" id="${epicId}-children">`;
-                    
-                    // Render all epic file variants
-                    epicVariants.forEach((variant, idx) => {
-                        const isPrimary = idx === 0;
-                        html += `<div class="folder-item folder-epic-variant ${isPrimary ? 'primary' : ''}" onclick="selectFile('${variant.path}')">
-                            <span class="folder-icon">📄</span>${variant.name.replace(/\.md$/, '')}
-                        </div>`;
-                    });
-                    
-                    // Render stories and substories for this epic
-                    const storyData = storyMap[i];
-                    if (storyData) {
-                        const { stories = [], substories = [] } = storyData;
-                        
-                        if (stories.length > 0) {
-                            html += `<div class="folder-item folder-stories-header">
-                                <span class="folder-icon">📝</span>Stories (${stories.length})
-                            </div>`;
-                            
-                            stories.forEach(story => {
-                                html += `<div class="folder-item folder-story" onclick="selectFile('${story.path}')">
-                                    <span class="folder-icon">📝</span>${story.name.replace(/\.md$/, '')}
-                                </div>`;
-                            });
-                        }
-                        
-                        if (substories.length > 0) {
-                            html += `<div class="folder-item folder-substories-header">
-                                <span class="folder-icon">📋</span>Substories (${substories.length})
-                            </div>`;
-                            
-                            substories.forEach(substory => {
-                                html += `<div class="folder-item folder-substory" onclick="selectFile('${substory.path}')">
-                                    <span class="folder-icon">📋</span>${substory.name.replace(/\.md$/, '')}
-                                </div>`;
-                            });
-                        }
-                    }
-                    
-                    html += `</div>`; // Close epic-children
-                } else {
-                    html += `<div class="folder-item folder-epic missing">
-                        <span class="folder-icon">📁</span>Epic ${epicKey} <span class="badge missing">MISSING</span>
-                    </div>`;
-                }
-            }
-            
-            // Add Analysis section
-            if (analysisFiles.length > 0) {
-                html += `<div class="folder-item folder-analysis" onclick="toggleAnalysis(this)">
-                    <span class="folder-icon">📈</span>Analysis Files (${analysisFiles.length}) <span class="folder-icon" style="margin-left: auto;">▼</span>
-                </div>`;
-                html += `<div class="analysis-items">`;
-                analysisFiles.forEach(file => {
-                    html += `<div class="folder-item analysis-item" onclick="selectFile('${file.path}')">
-                        <span class="folder-icon">📄</span>${file.name.replace(/\.md$/, '')}
-                    </div>`;
-                });
-                html += `</div>`;
-            }
+            // Render phases
+            html += renderPhaseSection('discovery', '📊 Discovery', 'Brainstorming, Research & Project Brief', phaseFiles.discovery);
+            html += renderPhaseSection('planning', '📋 Planning', 'PRD, Architecture & Design Specs', phaseFiles.planning);
+            html += renderDevelopmentPhase();
+            html += renderPhaseSection('testing', '✅ Testing', 'QA, Test Results & Quality Gates', phaseFiles.testing);
             
             treePanel.innerHTML = html || '<div style="padding: 10px; color: #a0aec0; font-size: 0.85em;">No workflow items found</div>';
+        }
+        
+        function renderPhaseSection(phaseId, phaseTitle, phaseDesc, files) {
+            if (files.length === 0) return '';
+            
+            const totalFiles = files.length;
+            const completedFiles = totalFiles; // All existing files are considered complete
+            const progress = totalFiles > 0 ? Math.round((completedFiles / totalFiles) * 100) : 0;
+            const status = progress === 100 ? 'complete' : (progress > 0 ? 'in-progress' : 'not-started');
+            const statusText = progress === 100 ? '🟢 Complete' : (progress > 0 ? '🟡 In Progress' : '⚪ Not Started');
+            
+            let html = `
+                <div class="phase-section phase-${phaseId}">
+                    <div class="phase-header expanded" onclick="togglePhase('${phaseId}')" id="phase-header-${phaseId}">
+                        <span class="phase-icon">${phaseTitle.split(' ')[0]}</span>
+                        <div class="phase-title">
+                            <div>${phaseTitle.split(' ').slice(1).join(' ')}</div>
+                            <div style="font-size: 0.75em; font-weight: 400; opacity: 0.7; margin-top: 2px;">${phaseDesc}</div>
+                        </div>
+                        <span class="phase-progress">${completedFiles}/${totalFiles}</span>
+                        <span class="phase-status ${status}">${statusText.split(' ')[1]}</span>
+                        <span class="phase-expand-icon">▼</span>
+                    </div>
+                    <div class="phase-content expanded" id="phase-content-${phaseId}">
+                        <div class="phase-progress-bar">
+                            <div class="phase-progress-fill" style="width: ${progress}%"></div>
+                        </div>
+            `;
+            
+            // Render files
+            files.forEach(file => {
+                const displayName = file.name.replace(/\.md$/, '').replace(/-/g, ' ');
+                const icon = getFileIcon(file.name);
+                html += `
+                    <div class="phase-file-item" onclick="selectFile('${file.path}')">
+                        <span class="phase-file-icon">${icon}</span>
+                        <span>${displayName}</span>
+                        <span class="phase-file-status">✓</span>
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+            
+            return html;
+        }
+        
+        function renderDevelopmentPhase() {
+            const epics = phaseFiles.development.epics;
+            const stories = phaseFiles.development.stories;
+            const totalItems = epics.length + stories.length;
+            
+            if (totalItems === 0) return '';
+            
+            const progress = Math.round((totalItems / Math.max(totalItems, projectMetadata.expectedEpics + projectMetadata.expectedStories || totalItems)) * 100);
+            const status = progress === 100 ? 'complete' : (progress > 0 ? 'in-progress' : 'not-started');
+            const statusText = progress === 100 ? '🟢 Complete' : (progress > 0 ? '🟡 In Progress' : '⚪ Not Started');
+            
+            let html = `
+                <div class="phase-section phase-development">
+                    <div class="phase-header expanded" onclick="togglePhase('development')" id="phase-header-development">
+                        <span class="phase-icon">💻</span>
+                        <div class="phase-title">
+                            <div>Development</div>
+                            <div style="font-size: 0.75em; font-weight: 400; opacity: 0.7; margin-top: 2px;">Epics & User Stories Implementation</div>
+                        </div>
+                        <span class="phase-progress">${totalItems} items</span>
+                        <span class="phase-status ${status}">${statusText.split(' ')[1]}</span>
+                        <span class="phase-expand-icon">▼</span>
+                    </div>
+                    <div class="phase-content expanded" id="phase-content-development">
+                        <div class="phase-progress-bar">
+                            <div class="phase-progress-fill" style="width: ${progress}%"></div>
+                        </div>
+            `;
+            
+            // Group by epic number
+            const epicNumbers = Object.keys(epicMap).map(Number).sort((a, b) => a - b);
+            
+            epicNumbers.forEach(epicNum => {
+                const epicKey = epicNum.toString().padStart(3, '0');
+                const epicVariants = epicMap[epicNum] || [];
+                const epicStories = storyMap[epicNum];
+                
+                if (epicVariants.length > 0) {
+                    html += `<div class="phase-subsection-header">📚 Epic ${epicKey}</div>`;
+                    
+                    epicVariants.forEach(epic => {
+                        const displayName = epic.name.replace(/\.md$/, '').replace(/-/g, ' ');
+                        html += `
+                            <div class="phase-file-item" onclick="selectFile('${epic.path}')">
+                                <span class="phase-file-icon">📝</span>
+                                <span>${displayName}</span>
+                                <span class="phase-file-status">✓</span>
+                            </div>
+                        `;
+                    });
+                    
+                    // Stories for this epic
+                    if (epicStories && (epicStories.stories.length > 0 || epicStories.substories.length > 0)) {
+                        epicStories.stories.forEach(story => {
+                            const displayName = story.name.replace(/\.md$/, '').replace(/-/g, ' ');
+                            html += `
+                                <div class="phase-file-item" onclick="selectFile('${story.path}')" style="padding-left: 55px;">
+                                    <span class="phase-file-icon">📝</span>
+                                    <span>${displayName}</span>
+                                    <span class="phase-file-status">✓</span>
+                                </div>
+                            `;
+                        });
+                        
+                        epicStories.substories.forEach(story => {
+                            const displayName = story.name.replace(/\.md$/, '').replace(/-/g, ' ');
+                            html += `
+                                <div class="phase-file-item" onclick="selectFile('${story.path}')" style="padding-left: 65px; opacity: 0.8;">
+                                    <span class="phase-file-icon">📋</span>
+                                    <span>${displayName}</span>
+                                    <span class="phase-file-status">✓</span>
+                                </div>
+                            `;
+                        });
+                    }
+                }
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+            
+            return html;
+        }
+        
+        function getFileIcon(filename) {
+            const icons = {
+                'brainstorming-session': '💡',
+                'project-brief': '📄',
+                'market-research': '📊',
+                'prd': '📝',
+                'architecture': '🏛️',
+                'front-end-spec': '🎨'
+            };
+            
+            for (const [key, icon] of Object.entries(icons)) {
+                if (filename.includes(key)) return icon;
+            }
+            
+            return '📄';
+        }
+        
+        function togglePhase(phaseId) {
+            const header = document.getElementById(`phase-header-${phaseId}`);
+            const content = document.getElementById(`phase-content-${phaseId}`);
+            
+            if (header && content) {
+                header.classList.toggle('collapsed');
+                header.classList.toggle('expanded');
+                content.classList.toggle('expanded');
+            }
         }
         
         function toggleAnalysis(element) {
@@ -1364,10 +1885,60 @@
         
         function startAutoRefresh() {
             if (autoRefreshInterval) clearInterval(autoRefreshInterval);
+            if (signalCheckInterval) clearInterval(signalCheckInterval);
             
+            // Fast polling for signal file (every 1 second)
+            signalCheckInterval = setInterval(async () => {
+                await checkSignalFile();
+            }, 1000);
+            
+            // Slower fallback directory scan (every 5 seconds)
             autoRefreshInterval = setInterval(async () => {
                 await checkForChanges();
-            }, 3000); // Check every 3 seconds
+            }, 5000);
+        }
+        
+        async function checkSignalFile() {
+            if (!projectRoot) return;
+            
+            try {
+                const docsDir = await projectRoot.getDirectoryHandle('docs').catch(() => null);
+                if (!docsDir) return;
+                
+                const signalFile = await docsDir.getFileHandle('.refresh-signal.json').catch(() => null);
+                if (!signalFile) return;
+                
+                const fileData = await signalFile.getFile();
+                const signalTime = fileData.lastModified;
+                
+                // Check if signal file has been updated since last check
+                if (signalTime > lastSignalCheck) {
+                    lastSignalCheck = signalTime;
+                    const content = await fileData.text();
+                    const signal = JSON.parse(content);
+                    
+                    await scanProjectDirectory();
+                    updateProjectDetails();
+                    
+                    const eventType = signal.eventType || 'changed';
+                    const fileName = signal.fileName || 'file';
+                    let message = '🔄 Auto-refreshed';
+                    
+                    if (eventType === 'Created') message = `➕ New file detected: ${fileName}`;
+                    else if (eventType === 'Changed') message = `📝 File modified: ${fileName}`;
+                    else if (eventType === 'Deleted') message = `🗑️ File deleted: ${fileName}`;
+                    
+                    showRefreshNotification(message, 3000);
+                    
+                    // Re-render current view
+                    const activeBtn = document.querySelector('.nav-btn.active');
+                    if (activeBtn) {
+                        await renderSection(activeBtn.dataset.section);
+                    }
+                }
+            } catch (e) {
+                // Signal file check failed - this is expected if watcher isn't running
+            }
         }
         
         async function checkForChanges() {
@@ -1377,30 +1948,74 @@
                 const docsDir = await projectRoot.getDirectoryHandle('docs').catch(() => null);
                 if (!docsDir) return;
                 
-                const previousState = previousFileState;
-                const currentState = {};
-                let hasChanged = false;
+                // Build snapshot of all files
+                const currentSnapshot = {};
                 
-                // Check all files
-                for (const [path, content] of Object.entries(fileCache)) {
-                    currentState[path] = content.length; // Use content length as simple hash
-                    if (!previousState[path] || previousState[path] !== currentState[path]) {
-                        hasChanged = true;
+                // Scan docs folder
+                for await (const [name, handle] of docsDir.entries()) {
+                    if (name.endsWith('.md')) {
+                        try {
+                            const file = await handle.getFile();
+                            currentSnapshot[`docs/${name}`] = { size: file.size, modified: file.lastModified };
+                        } catch (e) {}
                     }
                 }
                 
-                // Check for new files
-                for (const path of Object.keys(previousState)) {
-                    if (!currentState[path]) {
+                // Scan epics
+                try {
+                    const epicsDir = await docsDir.getDirectoryHandle('epics');
+                    for await (const [name, handle] of epicsDir.entries()) {
+                        if (name.endsWith('.md')) {
+                            try {
+                                const file = await handle.getFile();
+                                currentSnapshot[`docs/epics/${name}`] = { size: file.size, modified: file.lastModified };
+                            } catch (e) {}
+                        }
+                    }
+                } catch (e) {}
+                
+                // Scan stories
+                try {
+                    const storiesDir = await docsDir.getDirectoryHandle('stories');
+                    for await (const [name, handle] of storiesDir.entries()) {
+                        if (name.endsWith('.md')) {
+                            try {
+                                const file = await handle.getFile();
+                                currentSnapshot[`docs/stories/${name}`] = { size: file.size, modified: file.lastModified };
+                            } catch (e) {}
+                        }
+                    }
+                } catch (e) {}
+                
+                // Compare snapshots
+                const previousSnapshot = previousFileState;
+                let hasChanged = false;
+                
+                // Check for new or modified files
+                for (const [path, data] of Object.entries(currentSnapshot)) {
+                    if (!previousSnapshot[path] || 
+                        previousSnapshot[path].size !== data.size || 
+                        previousSnapshot[path].modified !== data.modified) {
                         hasChanged = true;
+                        break;
+                    }
+                }
+                
+                // Check for deleted files
+                if (!hasChanged) {
+                    for (const path of Object.keys(previousSnapshot)) {
+                        if (!currentSnapshot[path]) {
+                            hasChanged = true;
+                            break;
+                        }
                     }
                 }
                 
                 if (hasChanged) {
-                    previousFileState = currentState;
+                    previousFileState = currentSnapshot;
                     await scanProjectDirectory();
                     updateProjectDetails();
-                    showRefreshNotification('🔄 Dashboard refreshed - new files detected');
+                    showRefreshNotification('🔄 Dashboard auto-refreshed', 2000);
                     
                     // Re-render current view
                     const activeBtn = document.querySelector('.nav-btn.active');
@@ -1424,9 +2039,34 @@
             }, duration);
         }
         
+        // Theme management
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem('bmad-theme', newTheme);
+            
+            // Update icon
+            const themeIcon = document.getElementById('themeIcon');
+            themeIcon.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+        }
+        
+        function initTheme() {
+            const savedTheme = localStorage.getItem('bmad-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            const themeIcon = document.getElementById('themeIcon');
+            if (themeIcon) {
+                themeIcon.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+            }
+        }
+        
         // Auto-scan on load
         window.addEventListener('load', async () => {
-            console.log('Dashboard v9 loaded - Ready for project selection');
+            console.log('Dashboard v10 loaded - Ready for project selection');
+            initTheme();
         });
     </script>
 </body>
